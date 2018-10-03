@@ -1,33 +1,5 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
-    ext.kotlin_version = '1.2.61'
-    ext.versionCode = 100
-    ext.versionName = "1.0.0"
-    ext.supportLibVersion = "28.0.0"
-    ext.greenDaoSchemaVersion = 22
-    ext.googleLibVersion = "15.0.1"
-    ext.compileSdkVersion = 28
-    ext.buildToolsVersion = "28.0.1"
-    ext.targetSdkVersion = 28
-    ext.minSdkVersion = 17
-    ext.applicationId = "com.zest.android"
-    ext.testInstrumentationRunner = "android.support.test.runner.AndroidJUnitRunner"
-    ext.junitVersion = "4.12"
-    ext.calligraphyLibVersion = "2.3.0"
-    ext.multidexLibVersion = "1.0.3"
-    ext.retrofitLibVersion = "2.3.0"
-    ext.gsonLibVersion = "2.7"
-    ext.greendaoLibVersion = "3.2.2"
-    ext.parcelerLibVersion = "1.1.11"
-    ext.crashlyticsLibVersion = "2.9.5@aar"
-    ext.okhttpLibVersion = "3.8.1"
-    ext.butterknifeLibVersion = "8.8.1"
-    ext.picassoVersion = "2.5.2"
-    ext.debugDbVersion = "1.0.3"
-    ext.chipCloudLibVersion = "2.2.1"
-    ext.retrofitLibVersion = "2.4.0"
-    ext.roomCompilerLibVersion = "1.1.1"
-
     repositories {
         jcenter()
         mavenCentral()
@@ -37,7 +9,6 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:3.2.0'
         classpath 'com.google.gms:google-services:4.0.1'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
         classpath 'org.greenrobot:greendao-gradle-plugin:3.2.2'
@@ -60,5 +31,36 @@ allprojects {
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+
+ext {
+    versionCode = 100
+    versionName = "1.0.0"
+    supportLibVersion = "28.0.0"
+    greenDaoSchemaVersion = 22
+    googleLibVersion = "15.0.1"
+    compileSdkVersion = 28
+    buildToolsVersion = "28.0.2"
+    targetSdkVersion = 28
+    minSdkVersion = 17
+    applicationId = "com.zest.android"
+    testInstrumentationRunner = "android.support.test.runner.AndroidJUnitRunner"
+    junitVersion = "4.12"
+    calligraphyLibVersion = "2.3.0"
+    multidexLibVersion = "1.0.3"
+    retrofitLibVersion = "2.3.0"
+    gsonLibVersion = "2.7"
+    greendaoLibVersion = "3.2.2"
+    parcelerLibVersion = "1.1.11"
+    crashlyticsLibVersion = "2.9.5@aar"
+    okhttpLibVersion = "3.8.1"
+    butterknifeLibVersion = "8.8.1"
+    picassoVersion = "2.5.2"
+    debugDbVersion = "1.0.3"
+    chipCloudLibVersion = "2.2.1"
+    retrofitLibVersion = "2.4.0"
+    // Architecture Components dependencies
+    archLifecycleVersion = "1.0.0"
 }
 

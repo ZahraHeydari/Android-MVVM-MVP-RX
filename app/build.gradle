@@ -1,9 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'org.greenrobot.greendao'
 apply plugin: 'io.fabric'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
-apply plugin: 'kotlin-kapt'
 
 // keystore file properties
 def keystoreProperties = new Properties()
@@ -77,8 +74,6 @@ dependencies {
     implementation('com.crashlytics.sdk.android:crashlytics:2.9.5@aar') {
         transitive = true
     }
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     implementation "com.android.support:appcompat-v7:$supportLibVersion"
     implementation "com.android.support:design:$supportLibVersion"
     implementation "com.android.support:support-v4:$supportLibVersion"
@@ -93,9 +88,6 @@ dependencies {
     implementation "com.github.adroitandroid:ChipCloud:$chipCloudLibVersion"
     implementation "com.squareup.retrofit2:retrofit:$retrofitLibVersion"
     implementation "com.squareup.retrofit2:converter-gson:$retrofitLibVersion"
-    implementation "android.arch.persistence.room:runtime:$roomCompilerLibVersion"
-    implementation "android.arch.persistence.room:rxjava2:$roomCompilerLibVersion"
-    kapt "android.arch.persistence.room:compiler:$roomCompilerLibVersion"
     annotationProcessor "org.parceler:parceler:$parcelerLibVersion"
     debugImplementation "com.amitshekhar.android:debug-db:$debugDbVersion"
     testImplementation 'junit:junit:4.12'

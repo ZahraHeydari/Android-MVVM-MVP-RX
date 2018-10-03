@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout>
 
     <data>
 
@@ -16,8 +16,6 @@
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/favorite_recycler_view"
-            app:layoutManager="android.support.v7.widget.GridLayoutManager"
-            app:spanCount="2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
