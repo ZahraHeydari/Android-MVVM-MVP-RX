@@ -1,52 +1,69 @@
 package com.zest.android.search;
 
+import android.annotation.SuppressLint;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.databinding.DataBindingUtil;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.zest.android.LifecycleLoggingActivity;
 import com.zest.android.R;
 import com.zest.android.data.Recipe;
 import com.zest.android.data.source.SearchRepository;
-import com.zest.android.databinding.ActivitySearchBinding;
 import com.zest.android.detail.DetailActivity;
-import com.zest.android.home.RecipeViewModel;
+import com.zest.android.util.NetworkStateReceiver;
 
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
+import static android.support.v4.util.Preconditions.checkNotNull;
 
 
 /**
  * @Author ZARA.
  */
-public class SearchActivity extends LifecycleLoggingActivity implements OnSearchCallback {
+public class SearchActivity extends LifecycleLoggingActivity implements SearchContract.View{
 
 
     private static final String TAG = SearchActivity.class.getSimpleName();
     private static final String Action_SEARCH_TAG = "com.zest.android.ACTION_SEARCH_TAG";
+    @BindView(R.id.search_toolbar)
+    Toolbar mToolbar;
+    @BindView(R.id.search_recycler_view)
+    RecyclerView mRecyclerView;
+    @BindView(R.id.search_empty_view)
+    View mEmptyView;
+    @BindView(R.id.empty_text_view)
+    TextView mEmptyTextView;
+    @BindView(R.id.search_progress_bar)
+    ProgressBar mProgressBar;
+    private SearchContract.UserActionsListener mPresenter;
     private String mQuery;
     private SearchView mSearchView;
+    private List<Recipe> mRecipes = new ArrayList<>();
     private SearchAdapter mAdapter;
     private MenuItem mMenuSearchItem;
-    private String searchQuery;
-    private ActivitySearchBinding activitySearchBinding;
-    private RecipeViewModel recipeViewModel;
+    private String text;
 
     /**
      * get new Intent to Start Activity
@@ -59,7 +76,7 @@ public class SearchActivity extends LifecycleLoggingActivity implements OnSearch
     }
 
     /**
-     * get new Intent to start activity with searchQuery
+     * get new Intent to start activity with text
      *
      * @param context
      * @param text
@@ -80,30 +97,29 @@ public class SearchActivity extends LifecycleLoggingActivity implements OnSearch
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        activitySearchBinding = DataBindingUtil.setContentView(this, R.layout.activity_search);
-        recipeViewModel = new RecipeViewModel(new SearchRepository(this), this);
-        activitySearchBinding.setRecipeViewModel(recipeViewModel);
-        activitySearchBinding.executePendingBindings();
+        setContentView(R.layout.activity_search);
+        ButterKnife.bind(this);
 
-        setSupportActionBar(activitySearchBinding.searchToolbar);
+        setSupportActionBar(mToolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
-        ((TextView) activitySearchBinding.searchEmptyView.findViewById(R.id.empty_text_view))
-                .setText(getString(R.string.no_result));
+        mEmptyTextView.setText(R.string.no_result);
 
-        mAdapter = new SearchAdapter(this);
-        activitySearchBinding.searchRecyclerView.setAdapter(mAdapter);
+        new SearchPresenter(this, new SearchRepository(this));
+
+        mAdapter = new SearchAdapter(this, mRecipes);
+        mRecyclerView.setAdapter(mAdapter);
+
         if (getIntent() != null && Action_SEARCH_TAG.equals(getIntent().getAction())) {
             if (getIntent().getExtras() != null) {
-                searchQuery = Parcels.unwrap(getIntent().getExtras().getParcelable(String.class.getName()));
-                recipeViewModel.searchQuery(searchQuery);
+                text = Parcels.unwrap(getIntent().getExtras().getParcelable(String.class.getName()));
+                mPresenter.searchQuery(text);
             }
         }
-
     }
 
 
@@ -139,8 +155,8 @@ public class SearchActivity extends LifecycleLoggingActivity implements OnSearch
         mSearchView.setOnCloseListener(new OnSearchCloseListener());
 
         if (getIntent() != null && Action_SEARCH_TAG.equals(getIntent().getAction())) {
-            //when received with searchQuery
-            mSearchView.setQuery(searchQuery, false);
+            //when received with text
+            mSearchView.setQuery(text, false);
         }
         mSearchView.setIconified(false);
         return true;
@@ -158,23 +174,40 @@ public class SearchActivity extends LifecycleLoggingActivity implements OnSearch
 
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        if (mPresenter != null) {
+            mPresenter.start();
+        }
+    }
+
+    @SuppressLint("RestrictedApi")
+    @Override
+    public void setPresenter(SearchContract.UserActionsListener presenter) {
+        mPresenter = checkNotNull(presenter);
+    }
+
+    @Override
     public void gotoDetailPage(Recipe recipe) {
         DetailActivity.start(this, recipe);
     }
 
     @Override
-    public void showEmptyView(boolean visibility) {
-        activitySearchBinding.searchEmptyView.setVisibility(visibility ? View.VISIBLE : View.GONE);
-    }
-
-    @Override
-    public void noResult() {
-        mAdapter.removePreviousData();
-    }
-
-    @Override
     public void setResult(List<Recipe> recipes) {
-        mAdapter.addData(recipes);
+        mRecipes.clear();
+        mRecipes.addAll(recipes);
+        mAdapter.notifyDataSetChanged();
+        showEmptyView();
+    }
+
+    @Override
+    public void showEmptyView() {
+        mEmptyView.setVisibility(mRecipes.isEmpty() ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    public void showProgressBar(boolean visibility) {
+        mProgressBar.setVisibility(visibility ? View.VISIBLE : View.GONE);
     }
 
 
@@ -191,7 +224,7 @@ public class SearchActivity extends LifecycleLoggingActivity implements OnSearch
         @Override
         public boolean onQueryTextSubmit(String query) {
             mQuery = query;
-            recipeViewModel.searchQuery(mQuery);
+            mPresenter.searchQuery(mQuery);
             MenuItemCompat.expandActionView(mMenuSearchItem);
             return false;
         }

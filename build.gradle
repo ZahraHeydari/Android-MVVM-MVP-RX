@@ -7,12 +7,12 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.2.0'
+        classpath 'com.android.tools.build:gradle:3.1.4'
         classpath 'com.google.gms:google-services:4.0.1'
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
         classpath 'org.greenrobot:greendao-gradle-plugin:3.2.2'
-        classpath 'io.fabric.tools:gradle:1.26.1'
+        classpath 'io.fabric.tools:gradle:1.25.4'
     }
 }
 
@@ -37,11 +37,11 @@ task clean(type: Delete) {
 ext {
     versionCode = 100
     versionName = "1.0.0"
-    supportLibVersion = "28.0.0"
+    supportLibVersion = "27.1.1"
     greenDaoSchemaVersion = 22
     googleLibVersion = "15.0.1"
     compileSdkVersion = 28
-    buildToolsVersion = "28.0.2"
+    buildToolsVersion = "28.0.1"
     targetSdkVersion = 28
     minSdkVersion = 17
     applicationId = "com.zest.android"
@@ -52,15 +52,13 @@ ext {
     retrofitLibVersion = "2.3.0"
     gsonLibVersion = "2.7"
     greendaoLibVersion = "3.2.2"
-    parcelerLibVersion = "1.1.11"
-    crashlyticsLibVersion = "2.9.5@aar"
+    parcelerLibVersion = "1.1.9"
+    crashlyticsLibVersion = "2.6.8@aar"
     okhttpLibVersion = "3.8.1"
     butterknifeLibVersion = "8.8.1"
     picassoVersion = "2.5.2"
     debugDbVersion = "1.0.3"
     chipCloudLibVersion = "2.2.1"
     retrofitLibVersion = "2.4.0"
-    // Architecture Components dependencies
-    archLifecycleVersion = "1.0.0"
 }
 

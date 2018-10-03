@@ -2,23 +2,27 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_height="match_parent">
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/category_recycler_view"
-        app:layoutManager="android.support.v7.widget.GridLayoutManager"
-        app:spanCount="2"
+        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+        android:id="@+id/search_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
 
     <ProgressBar
-        android:visibility="gone"
-        android:id="@+id/category_progress_bar"
-        android:layout_centerInParent="true"
+        android:id="@+id/search_progress_bar"
         style="@style/Base.Widget.AppCompat.ProgressBar"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone" />
+
+    <!-- Empty view show when list is empty -->
+    <include
+        android:id="@+id/search_empty_view"
+        layout="@layout/empty_view"
+        android:visibility="gone" />
 
 </RelativeLayout>

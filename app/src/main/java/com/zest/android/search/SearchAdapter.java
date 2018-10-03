@@ -1,20 +1,21 @@
 package com.zest.android.search;
 
-import android.databinding.DataBindingUtil;
-import android.databinding.ViewDataBinding;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
 import com.zest.android.R;
 import com.zest.android.data.Recipe;
-import com.zest.android.databinding.HolderSearchBinding;
-import com.zest.android.home.RecipeViewModel;
-import com.zest.android.util.DataBindingViewHolder;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 
 /**
@@ -28,19 +29,17 @@ public class SearchAdapter extends RecyclerView.Adapter {
 
     private static final String TAG = SearchAdapter.class.getSimpleName();
     private final List<Recipe> recipes;
-    private final OnSearchCallback callback;
+    private final SearchContract.View searchView;
 
-
-    public SearchAdapter(OnSearchCallback callback) {
-        this.callback = callback;
-        this.recipes = new ArrayList<>();
+    public SearchAdapter(SearchContract.View searchView, List<Recipe> recipes) {
+        this.recipes = recipes;
+        this.searchView = searchView;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        HolderSearchBinding holderSearchBinding =
-                DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.holder_search, parent, false);
-        return new SearchViewHolder(holderSearchBinding);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.holder_search, parent, false);
+        return new SearchViewHolder(view);
     }
 
     @Override
@@ -54,33 +53,51 @@ public class SearchAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemCount() {
+        if (recipes == null) return 0;
         return recipes.size();
-    }
-
-    public void addData(List<Recipe> recipes) {
-        this.recipes.clear();
-        this.recipes.addAll(recipes);
-        notifyDataSetChanged();
-    }
-
-    public void removePreviousData() {
-        this.recipes.clear();
-        notifyDataSetChanged();
     }
 
     /**
      * holder of search item
      */
-    public class SearchViewHolder extends DataBindingViewHolder<Recipe> {
+    public class SearchViewHolder extends RecyclerView.ViewHolder {
 
-        public SearchViewHolder(ViewDataBinding dataBinding) {
-            super(dataBinding);
+        @BindView(R.id.search_image_view)
+        ImageView mImageView;
+        @BindView(R.id.search_text_view)
+        TextView mTextView;
+
+        public SearchViewHolder(View view) {
+            super(view);
+            ButterKnife.bind(this, view);
         }
 
-        @Override
         public void onBind(Recipe recipe) {
-            ((HolderSearchBinding) this.getDataBinding())
-                    .setRecipeViewModel(new RecipeViewModel(recipe, callback));
+            itemView.setOnClickListener(new OnItemViewClickListener(recipe));
+
+            mTextView.setText(recipe.getTitle());
+
+            try {
+                Picasso.with(itemView.getContext())
+                        .load(recipe.getImage())
+                        .into(mImageView);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+
+        private class OnItemViewClickListener implements View.OnClickListener {
+            private final Recipe recipe;
+
+            public OnItemViewClickListener(Recipe recipe) {
+                this.recipe = recipe;
+            }
+
+            @Override
+            public void onClick(View view) {
+                searchView.gotoDetailPage(recipe);
+            }
         }
     }
 }

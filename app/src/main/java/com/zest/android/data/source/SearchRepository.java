@@ -8,7 +8,7 @@ import com.zest.android.data.RecipeResponse;
 import com.zest.android.data.source.local.DatabaseManager;
 import com.zest.android.data.source.remote.APIServices;
 import com.zest.android.data.source.remote.ServiceGenerator;
-import com.zest.android.home.RecipeViewModel;
+import com.zest.android.search.SearchPresenter;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -38,17 +38,16 @@ public class SearchRepository {
 
 
     public void getAllRecipesByQuery(String query,
-                                     final RecipeViewModel.OnResultCallback onSearchResultCallback) {
-        mApiServices.search(query).enqueue(new SearchResponseCallback(onSearchResultCallback));
+                                     final SearchPresenter.SearchCallbackImp searchCallbackImp) {
+        mApiServices.search(query).enqueue(new SearchResponseCallback(searchCallbackImp));
     }
 
 
     private class SearchResponseCallback implements Callback<RecipeResponse> {
+        private final SearchPresenter.SearchCallbackImp searchCallbackImp;
 
-        private final RecipeViewModel.OnResultCallback searchResultCallback;
-
-        public SearchResponseCallback(RecipeViewModel.OnResultCallback searchCallbackImp) {
-            this.searchResultCallback = searchCallbackImp;
+        public SearchResponseCallback(SearchPresenter.SearchCallbackImp searchCallbackImp) {
+            this.searchCallbackImp = searchCallbackImp;
         }
 
         @Override
@@ -57,10 +56,10 @@ public class SearchRepository {
             if (response.isSuccessful()) {
                 Log.i(TAG, "onResponseBody: " + response.body());
                 final RecipeResponse meals = response.body();
-                if (meals != null && meals.getRecipes() != null) {
-                    searchResultCallback.loadData(meals.getRecipes());
-                }else{
-                    searchResultCallback.noData();
+                if (meals != null && meals.getRecipes() != null && !meals.getRecipes().isEmpty()) {
+                    searchCallbackImp.loadData(meals.getRecipes());
+                } else {
+                    searchCallbackImp.showEmptyView();
                 }
             } else {
                 Log.e(TAG, "onResponseError: " + response.errorBody());

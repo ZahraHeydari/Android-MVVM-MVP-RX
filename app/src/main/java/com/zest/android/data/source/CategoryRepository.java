@@ -4,12 +4,12 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.zest.android.category.CategoryViewModel;
 import com.zest.android.data.Category;
 import com.zest.android.data.CategoryResponse;
 import com.zest.android.data.source.local.DatabaseManager;
 import com.zest.android.data.source.remote.APIServices;
 import com.zest.android.data.source.remote.ServiceGenerator;
+import com.zest.android.category.CategoryPresenter;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -39,42 +39,33 @@ public class CategoryRepository {
     }
 
     /**
-     * To load all {@link Category}s
+     * to load all {@link Category}s
      *
-     * @param categoriesCallback
+     * @param categoriesCallbackImp
      * @return
      */
-    public void loadRootCategories(final CategoryViewModel.OnCategoriesCallback categoriesCallback) {
-        mApiServices.getCategories().enqueue(new OnCategoryResponseCallback(categoriesCallback));
-    }
-
-
-    private class OnCategoryResponseCallback implements Callback<CategoryResponse> {
-
-        private final CategoryViewModel.OnCategoriesCallback categoriesCallback;
-
-        public OnCategoryResponseCallback(CategoryViewModel.OnCategoriesCallback categoriesCallback) {
-            this.categoriesCallback = categoriesCallback;
-        }
-
-        @Override
-        public void onResponse(@NonNull Call<CategoryResponse> call, @NonNull Response<CategoryResponse> response) {
-            Log.d(TAG, "onResponse() called with: call = [" + call + "], response = [" + response.raw() + "]");
-            if (response.isSuccessful()) {
-                Log.i(TAG, "onResponseBody: " + response.body());
-                final CategoryResponse categoryResponse = response.body();
-                if (categoryResponse != null && categoryResponse.getCategories() != null &&
-                        !categoryResponse.getCategories().isEmpty()) {
-                    categoriesCallback.loadData(categoryResponse.getCategories());
+    public void loadRootCategories(final CategoryPresenter.CategoriesCallbackImp categoriesCallbackImp) {
+        mApiServices.getCategories().enqueue(new Callback<CategoryResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<CategoryResponse> call, @NonNull Response<CategoryResponse> response) {
+                Log.d(TAG, "onResponse() called with: call = [" + call + "], response = [" + response.raw() + "]");
+                if (response.isSuccessful()) {
+                    Log.i(TAG, "onResponseBody: " + response.body());
+                    final CategoryResponse categoryResponse = response.body();
+                    if (categoryResponse != null && !categoryResponse.getCategories().isEmpty()) {
+                        categoriesCallbackImp.loadData(categoryResponse.getCategories());
+                    }
+                } else {
+                    Log.e(TAG, "onResponseError: " + response.errorBody());
                 }
-            } else {
-                Log.e(TAG, "onResponseError: " + response.errorBody());
             }
-        }
 
-        @Override
-        public void onFailure(@NonNull Call<CategoryResponse> call, @NonNull Throwable t) {
-            t.printStackTrace();
-        }
+            @Override
+            public void onFailure(@NonNull Call<CategoryResponse> call, @NonNull Throwable t) {
+                t.printStackTrace();
+            }
+        });
     }
+
+
 }

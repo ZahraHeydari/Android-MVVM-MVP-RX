@@ -2,35 +2,38 @@ package com.zest.android.list;
 
 import android.content.Context;
 import android.content.Intent;
-import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.zest.android.LifecycleLoggingActivity;
 import com.zest.android.R;
 import com.zest.android.data.Recipe;
-import com.zest.android.databinding.ActivityListBinding;
 import com.zest.android.detail.DetailActivity;
 import com.zest.android.favorite.FavoriteFragment;
+import com.zest.android.favorite.OnFavoriteFragmentInteractionListener;
 import com.zest.android.util.ActivityUtils;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 
 /**
  * @Author ZARA.
  */
-public class ListActivity extends LifecycleLoggingActivity implements OnListCallback {
-
+public class ListActivity extends LifecycleLoggingActivity implements OnFavoriteFragmentInteractionListener {
 
     private static final String TAG = ListActivity.class.getSimpleName();
     private static final String ACTION_FAVORITE = "com.zest.android.ACTION_FAVORITE";
-    private ActivityListBinding activityListBinding;
+    @BindView(R.id.list_toolbar)
+    Toolbar mToolbar;
+
 
     /**
-     * To start activity with favorite mode
+     * To startWithFavorite activity for favorite
      *
      * @param context
      * @return
@@ -50,14 +53,17 @@ public class ListActivity extends LifecycleLoggingActivity implements OnListCall
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        activityListBinding = DataBindingUtil.setContentView(this, R.layout.activity_list);
-        setSupportActionBar(activityListBinding.listToolbar);
+        setContentView(R.layout.activity_list);
+        ButterKnife.bind(this);
+
+        setSupportActionBar(mToolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(true);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
-        activityListBinding.listToolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.colorAccent));
+        mToolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.colorAccent));
+
 
         if (getIntent() != null && getIntent().getAction() != null) {
             switch (getIntent().getAction()) {
@@ -69,6 +75,7 @@ public class ListActivity extends LifecycleLoggingActivity implements OnListCall
                     break;
             }
         }
+
     }
 
 
@@ -84,7 +91,7 @@ public class ListActivity extends LifecycleLoggingActivity implements OnListCall
 
 
     @Override
-    public void updateActionBarTitle(int resId) {
+    public void updateToolbarTitle(int resId) {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(resId);
         }
@@ -94,5 +101,4 @@ public class ListActivity extends LifecycleLoggingActivity implements OnListCall
     public void gotoDetailPage(Recipe recipe) {
         DetailActivity.start(this, recipe);
     }
-
 }

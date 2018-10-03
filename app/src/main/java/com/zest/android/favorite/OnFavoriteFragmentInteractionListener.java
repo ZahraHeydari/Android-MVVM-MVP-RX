@@ -9,6 +9,12 @@ import com.zest.android.data.Recipe;
  * Created by ZARA on 8/10/2018.
  */
 public interface OnFavoriteFragmentInteractionListener {
+    /**
+     * to update the title of {@link com.zest.android.list.ListActivity}
+     *
+     * @param resId
+     */
+    void updateToolbarTitle(int resId);
 
     /**
      * to go to {@link com.zest.android.detail.DetailActivity}
@@ -16,13 +22,4 @@ public interface OnFavoriteFragmentInteractionListener {
      * @param recipe
      */
     void gotoDetailPage(Recipe recipe);
-
-
-    /**
-     * to update {@link Recipe}
-     *
-     * @param recipe
-     */
-    void showDeleteFavoriteDialog(Recipe recipe);
-
 }

@@ -21,12 +21,9 @@ android {
         // Enable multiDex support.
         multiDexEnabled true
 
+
         // BUILD CONFIG FIELDS
         buildConfigField 'String', 'BASE_URL', '"https://www.themealdb.com/api/json/v1/1/"'
-
-        dataBinding {
-            enabled = true
-        }
     }
 
     dexOptions {
@@ -84,11 +81,13 @@ dependencies {
     implementation "com.google.code.gson:gson:$gsonLibVersion"
     implementation "com.squareup.okhttp3:okhttp:$okhttpLibVersion"
     implementation "org.greenrobot:greendao:$greendaoLibVersion"
+    implementation "com.jakewharton:butterknife:$butterknifeLibVersion"
     implementation "com.squareup.picasso:picasso:$picassoVersion"
     implementation "com.github.adroitandroid:ChipCloud:$chipCloudLibVersion"
     implementation "com.squareup.retrofit2:retrofit:$retrofitLibVersion"
     implementation "com.squareup.retrofit2:converter-gson:$retrofitLibVersion"
     annotationProcessor "org.parceler:parceler:$parcelerLibVersion"
+    annotationProcessor "com.jakewharton:butterknife-compiler:$butterknifeLibVersion"
     debugImplementation "com.amitshekhar.android:debug-db:$debugDbVersion"
     testImplementation 'junit:junit:4.12'
 }

@@ -1,36 +1,48 @@
 package com.zest.android.category;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.zest.android.R;
 import com.zest.android.data.Category;
 import com.zest.android.data.source.CategoryRepository;
-import com.zest.android.databinding.FragmentCategoryBinding;
-import com.zest.android.home.OnHomeCallback;
+import com.zest.android.home.HomeCallback;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+import static android.support.v4.util.Preconditions.checkNotNull;
 
 /**
  * Display a grid of {@link Category}s. User can choose to view the subs of each category.
  *
- * Created by ZARA on 09/30/2018.
+ * Created by ZARA on 08/10/2018.
  */
-public class CategoryFragment extends Fragment implements OnCategoryFragmentInteractionListener {
+public class CategoryFragment extends Fragment implements CategoryContract.View {
 
     public static final String FRAGMENT_NAME = CategoryFragment.class.getName();
     private static final String TAG = CategoryFragment.class.getSimpleName();
+    @BindView(R.id.category_recycler_view)
+    RecyclerView mRecyclerView;
+    @BindView(R.id.category_progress_bar)
+    ProgressBar mProgressBar;
+    private View root;
+    private CategoryContract.UserActionsListener mPresenter;
     private CategoryAdapter mAdapter;
-    private OnHomeCallback mCallback;
-    private FragmentCategoryBinding fragmentCategoryBinding;
-    private CategoryViewModel categoryViewModel;
+    private HomeCallback mCallback;
+    private List<Category> categories = new ArrayList<>();
 
 
     public static CategoryFragment newInstance() {
@@ -43,19 +55,19 @@ public class CategoryFragment extends Fragment implements OnCategoryFragmentInte
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnHomeCallback) {
-            mCallback = (OnHomeCallback) context;
+        if (context instanceof HomeCallback) {
+            mCallback = (HomeCallback) context;
         } else {
-            throw new ClassCastException(context.toString() + " must implement OnHomeCallback!");
+            throw new ClassCastException(context.toString() + " must implement HomeCallback!");
         }
-        mCallback.showFab(false);
+        mCallback.hideFab();
+
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        categoryViewModel = new CategoryViewModel(new CategoryRepository(getContext()), this);
-        mAdapter = new CategoryAdapter(this);
+        new CategoryPresenter(this, new CategoryRepository(getContext()));
     }
 
     @Nullable
@@ -63,15 +75,39 @@ public class CategoryFragment extends Fragment implements OnCategoryFragmentInte
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        fragmentCategoryBinding = DataBindingUtil.inflate(inflater,
-                R.layout.fragment_category, container, false);
-        fragmentCategoryBinding.setCategoryViewModel(categoryViewModel);
-        fragmentCategoryBinding.executePendingBindings();
+        root = LayoutInflater.from(getContext()).inflate(R.layout.fragment_category, container, false);
+        ButterKnife.bind(this, root);
 
-        fragmentCategoryBinding.categoryRecyclerView.setAdapter(mAdapter);
-        categoryViewModel.loadCategories();
+        mAdapter = new CategoryAdapter(this, categories);
+        mRecyclerView.setAdapter(mAdapter);
 
-        return fragmentCategoryBinding.getRoot();
+        mPresenter.loadCategories();
+
+        return root;
+    }
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (mPresenter != null) {
+            mPresenter.start();
+        }
+    }
+
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        root = null;
+        mAdapter = null;
+        mCallback = null;
+    }
+
+    @SuppressLint("RestrictedApi")
+    @Override
+    public void setPresenter(CategoryContract.UserActionsListener presenter) {
+        mPresenter = checkNotNull(presenter);
     }
 
     @Override
@@ -81,22 +117,13 @@ public class CategoryFragment extends Fragment implements OnCategoryFragmentInte
 
     @Override
     public void setResult(List<Category> categories) {
-        mAdapter.addData(categories);
+        this.categories.addAll(categories);
+        mAdapter.notifyDataSetChanged();
+
     }
 
     @Override
-    public void onDetach() {
-        super.onDetach();
-        mAdapter = null;
-        mCallback = null;
-    }
-
-    public void scrollUp() {
-        fragmentCategoryBinding.categoryRecyclerView.post(new Runnable() {
-            @Override
-            public void run() {
-                fragmentCategoryBinding.categoryRecyclerView.smoothScrollToPosition(0);// Call smooth scroll
-            }
-        });
+    public void showProgressBar(boolean visibility) {
+        mProgressBar.setVisibility(visibility ? View.VISIBLE : View.GONE);
     }
 }

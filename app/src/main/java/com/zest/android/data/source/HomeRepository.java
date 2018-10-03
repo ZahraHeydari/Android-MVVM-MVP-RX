@@ -9,7 +9,7 @@ import com.zest.android.data.Recipe;
 import com.zest.android.data.source.local.DatabaseManager;
 import com.zest.android.data.source.remote.APIServices;
 import com.zest.android.data.source.remote.ServiceGenerator;
-import com.zest.android.home.RecipeViewModel;
+import com.zest.android.home.HomePresenter;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -37,13 +37,14 @@ public class HomeRepository {
         mApiServices = ServiceGenerator.createService(APIServices.class);
     }
 
+
     /**
      * To load all {@link Recipe}s
      *
-     * @param resultCallback
+     * @param recipesCallbackImp
      */
-    public void loadRecipeList(final RecipeViewModel.OnResultCallback resultCallback) {
-        mApiServices.getRecipes().enqueue(new RecipesResponseCallback(resultCallback));
+    public void loadRecipeList(final HomePresenter.RecipesCallbackImp recipesCallbackImp) {
+        mApiServices.getRecipes().enqueue(new RecipesResponseCallback(recipesCallbackImp));
     }
 
     /**
@@ -58,7 +59,7 @@ public class HomeRepository {
     }
 
     public void deleteFavorite(Recipe recipe) {
-        Log.d(TAG, "showDeleteFavoriteDialog() called with: recipe = [" + recipe + "]");
+        Log.d(TAG, "deleteFavorite() called with: recipe = [" + recipe + "]");
         mDatabaseManager.deleteRecipe(recipe);
     }
 
@@ -69,10 +70,10 @@ public class HomeRepository {
 
     private class RecipesResponseCallback implements Callback<RecipeResponse> {
 
-        private final RecipeViewModel.OnResultCallback resultCallback;
+        private final HomePresenter.RecipesCallbackImp recipesCallbackImp;
 
-        public RecipesResponseCallback(RecipeViewModel.OnResultCallback recipesCallback) {
-            this.resultCallback = recipesCallback;
+        public RecipesResponseCallback(HomePresenter.RecipesCallbackImp recipesCallbackImp) {
+            this.recipesCallbackImp = recipesCallbackImp;
         }
 
         @Override
@@ -83,9 +84,7 @@ public class HomeRepository {
                 Log.i(TAG, "getRecipes onResponseBody: " + response.body());
                 final RecipeResponse meals = response.body();
                 if (meals != null && meals.getRecipes() != null && !meals.getRecipes().isEmpty()) {
-                    resultCallback.loadData(meals.getRecipes());
-                }else{
-                    resultCallback.noData();
+                    recipesCallbackImp.onLoadList(meals.getRecipes());
                 }
             } else {
                 Log.e(TAG, "getRecipes onResponseError ");

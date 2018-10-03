@@ -8,14 +8,12 @@ import com.zest.android.data.Recipe;
  *
  * Created by ZARA on 08/06/2018.
  */
-public interface OnHomeCallback {
+public interface HomeCallback {
 
-    /**
-     * To show/hide fab in {@link HomeFragment}
-     *
-     * @param visibility
-     */
-    void showFab(boolean visibility);
+    void hideFab();
+
+
+    void showFab();
 
     /**
      * to go to {@link com.zest.android.detail.DetailActivity} by {@link Recipe}
@@ -23,6 +21,7 @@ public interface OnHomeCallback {
      * @param recipe
      */
     void gotoDetailPage(Recipe recipe);
+
 
     /**
      * To show a list of the category subs by {@link Category}

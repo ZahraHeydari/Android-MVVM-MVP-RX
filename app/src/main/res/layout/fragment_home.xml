@@ -1,43 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <data>
 
-        <import type="android.view.View" />
-
-        <variable
-            name="recipeViewModel"
-            type="com.zest.android.home.RecipeViewModel" />
-    </data>
-
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <android.support.v7.widget.RecyclerView
+        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+        android:id="@+id/home_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        app:spanCount="2" />
 
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/home_recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layoutManager="android.support.v7.widget.LinearLayoutManager" />
+    <!-- Empty view show when list is empty -->
+    <include
+        android:id="@+id/home_empty_view"
+        layout="@layout/empty_view"
+        android:visibility="gone" />
 
 
-        <!-- Empty view show when list is empty -->
-        <include
-            android:id="@+id/home_empty_view"
-            layout="@layout/empty_view"
-            android:visibility="@{recipeViewModel.hasRecipe? View.GONE:View.VISIBLE}" />
+    <ProgressBar
+        android:id="@+id/home_progress_bar"
+        style="@style/Base.Widget.AppCompat.ProgressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone" />
 
-
-        <ProgressBar
-            android:id="@+id/home_progress_bar"
-            style="@style/Base.Widget.AppCompat.ProgressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:visibility="@{recipeViewModel.isLoading? View.VISIBLE:View.GONE}" />
-
-    </RelativeLayout>
-</layout>
+</RelativeLayout>

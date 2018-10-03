@@ -20,13 +20,17 @@ public class MainApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
         MultiDex.install(this);
+
         Fabric.with(this, new Crashlytics());
+
         CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
                 .setDefaultFontPath("fonts/AtlantaBook.ttf")
                 .setFontAttrId(R.attr.fontPath)
                 .build());
     }
+
 
     @Override
     protected void attachBaseContext(Context base) {
