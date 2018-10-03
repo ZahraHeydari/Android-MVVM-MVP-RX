@@ -1,16 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/favorite_recycler_view"
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="recipeViewModel"
+            type="com.zest.android.home.RecipeViewModel" />
+    </data>
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent">
 
-    <!-- Empty view show when list is empty -->
-    <include
-        android:id="@+id/favorite_empty_view"
-        layout="@layout/empty_view" />
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/favorite_recycler_view"
+            app:layoutManager="android.support.v7.widget.GridLayoutManager"
+            app:spanCount="2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
-</RelativeLayout>
+        <!-- Empty view show when list is empty -->
+        <include
+            android:id="@+id/favorite_empty_view"
+            layout="@layout/empty_view"
+            android:visibility="@{recipeViewModel.hasRecipe?View.GONE:View.VISIBLE}" />
+
+    </RelativeLayout>
+</layout>

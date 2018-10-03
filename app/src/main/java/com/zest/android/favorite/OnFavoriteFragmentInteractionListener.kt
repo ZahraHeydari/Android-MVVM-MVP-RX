@@ -3,23 +3,26 @@ package com.zest.android.favorite
 import com.zest.android.data.Recipe
 
 /**
- * To make an interaction between [FavoriteFragment] and [com.zest.android.list.ListActivity]
+ * To make an interaction between [FavoriteFragment] and
+ * [com.zest.android.list.ListActivity]
  *
- * Created by ZARA on 09/25/2018.
+ * Created by ZARA on 8/10/2018.
  */
 interface OnFavoriteFragmentInteractionListener {
 
     /**
-     * To update the title of [com.zest.android.list.ListActivity]
-     *
-     * @param resId
-     */
-    fun updateToolbarTitle(resId: Int)
-
-    /**
-     * To go to [com.zest.android.detail.DetailActivity]
+     * to go to [com.zest.android.detail.DetailActivity]
      *
      * @param recipe
      */
     fun gotoDetailPage(recipe: Recipe)
+
+
+    /**
+     * to update [Recipe]
+     *
+     * @param recipe
+     */
+    fun showDeleteFavoriteDialog(recipe: Recipe)
+
 }

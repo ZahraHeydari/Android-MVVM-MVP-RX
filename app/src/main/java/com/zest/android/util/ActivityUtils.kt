@@ -3,11 +3,12 @@ package com.zest.android.util
 import android.annotation.SuppressLint
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
+import android.support.v4.util.Preconditions.checkNotNull
 
 /**
  * This provides methods to help Activities load their UI.
  *
- * Created by ZARA on 09/25/2018.
+ * Created by ZARA on 8/10/2018.
  */
 object ActivityUtils {
 
@@ -15,10 +16,11 @@ object ActivityUtils {
      * The `fragment` is added to the container view with id `frameId`. The operation is
      * performed by the `fragmentManager`.
      */
+    @SuppressLint("RestrictedApi")
     fun addFragmentToActivity(fragmentManager: FragmentManager,
                               fragment: Fragment, frameId: Int) {
-        checkNotNull(fragmentManager)
-        checkNotNull(fragment)
+        checkNotNull<FragmentManager>(fragmentManager)
+        checkNotNull<Fragment>(fragment)
         val transaction = fragmentManager.beginTransaction()
         transaction.replace(frameId, fragment)
         transaction.commit()
@@ -33,12 +35,13 @@ object ActivityUtils {
      * @param tag
      * @param frameId
      */
+    @SuppressLint("RestrictedApi")
     fun replaceFragmentInActivity(fragmentManager: FragmentManager,
                                   fragment: Fragment,
                                   tag: String,
                                   frameId: Int) {
-        checkNotNull(fragmentManager)
-        checkNotNull(fragment)
+        checkNotNull<FragmentManager>(fragmentManager)
+        checkNotNull<Fragment>(fragment)
         fragmentManager.beginTransaction()
                 .replace(frameId, fragment, tag)
                 .addToBackStack(tag)

@@ -1,38 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="150dp"
-    android:orientation="vertical">
+<layout>
 
-    <android.support.v7.widget.CardView
-        android:id="@+id/category_image_card_view"
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="categoryViewModel"
+            type="com.zest.android.category.CategoryViewModel" />
+    </data>
+
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:elevation="2dp"
-        android:layout_margin="8dp"
-        app:cardCornerRadius="16dp"
-        app:cardPreventCornerOverlap="false"
-        app:cardUseCompatPadding="true"
-        tools:ignore="RtlCompat">
+        android:layout_height="150dp"
+        android:onClick="@{()->categoryViewModel.onCategoryClick()}"
+        android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/category_image_view"
+        <android.support.v7.widget.CardView
+            android:id="@+id/category_image_card_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/lightGray"
-            android:scaleType="centerCrop" />
+            android:layout_margin="8dp"
+            android:elevation="2dp"
+            app:cardCornerRadius="16dp"
+            app:cardPreventCornerOverlap="false"
+            app:cardUseCompatPadding="true"
+            tools:ignore="RtlCompat">
 
-        <TextView
-            android:id="@+id/category_text_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/transparent"
-            android:gravity="center"
-            android:textAlignment="center"
-            android:textColor="@color/whiteSmoke"
-            android:textSize="@dimen/title" />
-    </android.support.v7.widget.CardView>
+            <ImageView
+                android:id="@+id/category_image_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/lightGray"
+                android:scaleType="centerCrop"
+                app:onLoadImage="@{categoryViewModel.image}"/>
 
-</FrameLayout>
+            <TextView
+                android:id="@+id/category_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/transparent"
+                android:gravity="center"
+                android:text="@{categoryViewModel.title}"
+                android:textAlignment="center"
+                android:textColor="@color/whiteSmoke"
+                android:textSize="@dimen/title" />
+
+        </android.support.v7.widget.CardView>
+
+    </FrameLayout>
+
+</layout>

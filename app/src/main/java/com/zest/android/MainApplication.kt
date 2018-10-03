@@ -9,7 +9,6 @@ import io.fabric.sdk.android.Fabric
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig
 import kotlin.properties.Delegates
 
-
 /**
  * @Author ZARA.
  */
@@ -33,12 +32,10 @@ class MainApplication : Application() {
                 .build())
     }
 
-
     override fun attachBaseContext(base: Context) {
         super.attachBaseContext(base)
         MultiDex.install(this)
     }
-
 
     /**
      * this method called when phone [Configuration] changed like

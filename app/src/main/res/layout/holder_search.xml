@@ -1,43 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+<layout>
 
-    <android.support.v7.widget.CardView
-        android:id="@+id/search_image_card_view"
-        android:layout_width="@dimen/search_card_width_size"
-        android:layout_height="@dimen/search_card_height_size"
-        android:layout_marginBottom="4dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="4dp"
-        android:elevation="2dp"
-        app:cardCornerRadius="16dp"
-        app:cardPreventCornerOverlap="false"
-        app:cardUseCompatPadding="true"
-        tools:ignore="RtlCompat">
+    <data>
 
-        <ImageView
-            android:background="@color/lightGray"
-            android:id="@+id/search_image_view"
-            android:layout_width="match_parent"
+        <import type="android.view.View" />
+
+        <variable
+            name="recipeViewModel"
+            type="com.zest.android.home.RecipeViewModel" />
+    </data>
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="@{()-> recipeViewModel.onSearchItemClick()}"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/search_image_card_view"
+            android:layout_width="@dimen/search_card_width_size"
+            android:layout_height="@dimen/search_card_height_size"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="4dp"
+            android:elevation="2dp"
+            app:cardCornerRadius="16dp"
+            app:cardPreventCornerOverlap="false"
+            app:cardUseCompatPadding="true"
+            tools:ignore="RtlCompat">
+
+            <ImageView
+                android:id="@+id/search_image_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/lightGray"
+                android:scaleType="centerCrop"
+                app:onLoadImage="@{recipeViewModel.image}" />
+
+        </android.support.v7.widget.CardView>
+
+        <TextView
+            android:id="@+id/search_text_view"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:scaleType="centerCrop" />
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="8dp"
+            android:layout_toEndOf="@id/search_image_card_view"
+            android:gravity="center|start"
+            android:text="@{recipeViewModel.title}"
+            android:textColor="@color/colorTextPrimary"
+            android:textSize="@dimen/subheading2" />
 
-    </android.support.v7.widget.CardView>
+    </RelativeLayout>
 
-    <TextView
-        android:id="@+id/search_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_centerVertical="true"
-        android:layout_marginEnd="8dp"
-        android:layout_toEndOf="@id/search_image_card_view"
-        android:gravity="center|start"
-        android:textColor="@color/colorTextPrimary"
-        android:textSize="@dimen/subheading2" />
-
-</RelativeLayout>
+</layout>

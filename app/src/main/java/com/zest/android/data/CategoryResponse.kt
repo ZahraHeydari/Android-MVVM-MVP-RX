@@ -4,7 +4,7 @@ import android.os.Parcel
 import android.os.Parcelable
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
-import java.util.*
+import java.util.ArrayList
 
 data class CategoryResponse(@SerializedName("categories") @Expose var categories: List<Category> = ArrayList()) : Parcelable {
 

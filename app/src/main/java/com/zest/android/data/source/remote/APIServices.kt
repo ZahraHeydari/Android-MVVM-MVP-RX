@@ -11,15 +11,21 @@ import retrofit2.http.Query
  *
  * @Author ZARA.
  */
-interface APIServices{
-
+interface APIServices {
 
     /**
-     * To get list of latest [Recipe]s
+     * get list of latest recipes
      */
-    @GET("latest.php")
-    fun getRecipes(): Call<RecipeResponse>
+    @get:GET("latest.php")
+    val recipes: Call<RecipeResponse>
 
+    /**
+     * To get List all meal categories
+     *
+     * @return
+     */
+    @get:GET("categories.php")
+    val categories: Call<CategoryResponse>
 
     /**
      * To get [com.zest.android.data.Recipe] detail by id
@@ -39,12 +45,5 @@ interface APIServices{
     @GET("search.php")
     fun search(@Query("s") query: String): Call<RecipeResponse>
 
-
-    /**
-     * To get List all meal categories
-     *
-     * @return
-     */
-    @GET("categories.php")
-    fun getCategories(): Call<CategoryResponse>
 }
+

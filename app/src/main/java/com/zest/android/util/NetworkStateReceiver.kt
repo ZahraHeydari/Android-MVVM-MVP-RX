@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
 import android.util.Log
-import java.util.HashSet
+import java.util.*
 
 class NetworkStateReceiver : BroadcastReceiver() {
 
@@ -32,8 +32,11 @@ class NetworkStateReceiver : BroadcastReceiver() {
 
     private fun notifyState(listener: OnNetworkStateReceiverListener?) {
         if (connected == null || listener == null) return
-        if (connected!!) listener.networkAvailable()
-        else listener.networkUnavailable()
+
+        if (connected!!)
+            listener.networkAvailable()
+        else
+            listener.networkUnavailable()
     }
 
     fun addListener(listener: OnNetworkStateReceiverListener) {
@@ -54,6 +57,6 @@ class NetworkStateReceiver : BroadcastReceiver() {
 
     companion object {
 
-        private val TAG = NetworkStateReceiver::class.java.simpleName
+        private val TAG = NetworkStateReceiver::class.java!!.getSimpleName()
     }
 }

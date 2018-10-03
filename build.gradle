@@ -1,6 +1,6 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
-    ext.kotlin_version = '1.2.31'
+    ext.kotlin_version = '1.2.61'
     ext.versionCode = 100
     ext.versionName = "1.0.0"
     ext.supportLibVersion = "28.0.0"
@@ -18,8 +18,8 @@ buildscript {
     ext.retrofitLibVersion = "2.3.0"
     ext.gsonLibVersion = "2.7"
     ext.greendaoLibVersion = "3.2.2"
-    ext.parcelerLibVersion = "1.1.9"
-    ext.crashlyticsLibVersion = "2.6.8@aar"
+    ext.parcelerLibVersion = "1.1.11"
+    ext.crashlyticsLibVersion = "2.9.5@aar"
     ext.okhttpLibVersion = "3.8.1"
     ext.butterknifeLibVersion = "8.8.1"
     ext.picassoVersion = "2.5.2"
@@ -35,13 +35,13 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.4'
+        classpath 'com.android.tools.build:gradle:3.2.0'
         classpath 'com.google.gms:google-services:4.0.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
         classpath 'org.greenrobot:greendao-gradle-plugin:3.2.2'
-        classpath 'io.fabric.tools:gradle:1.26.0'
+        classpath 'io.fabric.tools:gradle:1.26.1'
     }
 }
 

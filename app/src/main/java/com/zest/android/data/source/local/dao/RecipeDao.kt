@@ -12,7 +12,7 @@ interface RecipeDao {
     fun insert(recipe: Recipe)
 
     @Query("SELECT * FROM Recipe")
-    fun loadAll(): List<Recipe>
+    fun loadAll(): MutableList<Recipe>
 
     @Delete
     fun delete(recipe: Recipe)

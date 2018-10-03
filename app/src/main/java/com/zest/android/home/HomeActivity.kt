@@ -2,28 +2,32 @@ package com.zest.android.home
 
 import android.content.Context
 import android.content.Intent
+import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.design.widget.NavigationView
-import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import com.zest.android.LifecycleLoggingActivity
 import com.zest.android.R
 import com.zest.android.category.CategoryFragment
+import com.zest.android.data.Category
 import com.zest.android.data.Recipe
-import com.zest.android.data.source.HomeRepository
+import com.zest.android.databinding.ActivityHomeBinding
 import com.zest.android.detail.DetailActivity
 import com.zest.android.list.ListActivity
 import com.zest.android.search.SearchActivity
 import com.zest.android.util.ActivityUtils
-import kotlinx.android.synthetic.main.activity_home.*
-import kotlinx.android.synthetic.main.app_bar_home.*
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 
+/**
+ * @Author ZARA.
+ */
 class HomeActivity : LifecycleLoggingActivity(), NavigationView.OnNavigationItemSelectedListener, OnHomeCallback {
 
+    private lateinit var activityHomeBinding: ActivityHomeBinding
 
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase))
@@ -31,71 +35,40 @@ class HomeActivity : LifecycleLoggingActivity(), NavigationView.OnNavigationItem
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_home)
+        activityHomeBinding = DataBindingUtil.setContentView(this, R.layout.activity_home)
 
-        setSupportActionBar(home_toolbar)
+        setSupportActionBar(activityHomeBinding.homeToolbar)
         if (supportActionBar != null) {
-            supportActionBar?.setDisplayShowTitleEnabled(false)
+            supportActionBar!!.setDisplayShowTitleEnabled(false)
         }
 
-        home_toolbar_title_image_view.setOnClickListener {
-            val fragmentById = supportFragmentManager.findFragmentById(R.id.home_container)
-            if (fragmentById != null && fragmentById is HomeFragment) {
-                fragmentById.scrollUp()
-            } else if (fragmentById != null && fragmentById is CategoryFragment) {
-                fragmentById.scrollUp()
-            }
-        }
-
-        val toggle = ActionBarDrawerToggle(this, home_drawer_layout, home_toolbar,
+        val toggle = ActionBarDrawerToggle(
+                this, activityHomeBinding.drawerLayout, activityHomeBinding.homeToolbar,
                 R.string.navigation_drawer_open, R.string.navigation_drawer_close)
-        home_drawer_layout.addDrawerListener(toggle)
+        activityHomeBinding.drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 
-        var homeFragment: Fragment? = supportFragmentManager.findFragmentById(R.id.home_container)
+        var homeFragment = supportFragmentManager.findFragmentById(R.id.home_container)
         if (homeFragment == null) {
             homeFragment = HomeFragment.newInstance()
             ActivityUtils.addFragmentToActivity(supportFragmentManager, homeFragment, R.id.home_container)
         }
+        activityHomeBinding.homeToolbarTitleImageView.setOnClickListener(OnToolbarImageClickListener())
+    }
 
-        HomePresenter((homeFragment as HomeContract.View), HomeRepository())
+    override fun onStart() {
+        super.onStart()
+        activityHomeBinding.homeFab.setOnClickListener(OnFABClickListener())
+        activityHomeBinding.navView.setNavigationItemSelectedListener(this)
+        activityHomeBinding.navView.setCheckedItem(R.id.nav_recipes)
+    }
 
-        home_fab.setOnClickListener {
-            ActivityUtils.replaceFragmentInActivity(
-                    supportFragmentManager,
-                    CategoryFragment.newInstance(),
-                    CategoryFragment.FRAGMENT_NAME,
-                    R.id.home_container)
-            hideFab()
+    override fun onBackPressed() {
+        if (activityHomeBinding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            activityHomeBinding.drawerLayout.closeDrawer(GravityCompat.START)
+        } else {
+            super.onBackPressed()
         }
-    }
-
-    override fun hideFab() {
-        home_fab.hide()
-    }
-
-    override fun showFab() {
-        home_fab.show()
-    }
-
-    override fun gotoDetailPage(recipe: Recipe) {
-        DetailActivity.start(this, recipe)
-    }
-
-    override fun showSubCategoriesByCategoryTitle(categoryTitle: String) {
-        SearchActivity.startWithText(this@HomeActivity, categoryTitle)
-    }
-
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        // Handle navigation view item clicks here.
-        val id = item.itemId
-        if (id == R.id.nav_recipes) {
-            // Handle the favorite action
-        } else if (id == R.id.nav_favorite) {
-            ListActivity.startWithFavorite(this)
-        }
-        home_drawer_layout.closeDrawer(GravityCompat.START)
-        return true
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -109,7 +82,6 @@ class HomeActivity : LifecycleLoggingActivity(), NavigationView.OnNavigationItem
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         val id = item.itemId
-
         if (id == R.id.action_search) {
             SearchActivity.start(this)
             return true
@@ -118,27 +90,57 @@ class HomeActivity : LifecycleLoggingActivity(), NavigationView.OnNavigationItem
     }
 
 
-    override fun onStart() {
-        super.onStart()
-        home_nav_view.setNavigationItemSelectedListener(this)
-        home_nav_view.setCheckedItem(R.id.nav_recipes)
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        // Handle navigation view item clicks here.
+        val id = item.itemId
+        if (id == R.id.nav_recipes) {
+            //nothing to do
+        } else if (id == R.id.nav_favorite) {
+            ListActivity.startWithFavorite(this)
+        }
+        activityHomeBinding.drawerLayout.closeDrawer(GravityCompat.START)
+        return true
     }
 
-    override fun onBackPressed() {
-        if (home_drawer_layout.isDrawerOpen(GravityCompat.START)) {
-            home_drawer_layout.closeDrawer(GravityCompat.START)
-        } else {
-            super.onBackPressed()
+    override fun showFab(visibility: Boolean) {
+        if (visibility) activityHomeBinding.homeFab.show() else activityHomeBinding.homeFab.hide()
+    }
+
+    override fun gotoDetailPage(recipe: Recipe) {
+        DetailActivity.start(this, recipe)
+    }
+
+    override fun showSubCategoriesByCategoryTitle(category: Category) {
+        SearchActivity.startWithText(this@HomeActivity, category.title)
+    }
+
+    private inner class OnFABClickListener : View.OnClickListener {
+        override fun onClick(view: View) {
+            ActivityUtils.replaceFragmentInActivity(
+                    supportFragmentManager,
+                    CategoryFragment.newInstance(),
+                    CategoryFragment.FRAGMENT_NAME,
+                    R.id.home_container)
         }
     }
 
+    private inner class OnToolbarImageClickListener : View.OnClickListener {
+        override fun onClick(view: View) {
+            val fragmentById = supportFragmentManager.findFragmentById(R.id.home_container)
+            if (fragmentById != null && fragmentById is HomeFragment) {
+                fragmentById.scrollUp()
+            } else if (fragmentById is CategoryFragment) {
+                fragmentById.scrollUp()
+            }
+        }
+    }
 
     companion object {
+
+        private val TAG = HomeActivity::class.java.simpleName
 
         fun start(context: Context) {
             context.startActivity(Intent(context, HomeActivity::class.java))
         }
     }
-
-
 }
