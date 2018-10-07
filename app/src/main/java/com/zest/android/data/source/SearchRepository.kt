@@ -44,7 +44,7 @@ class SearchRepository {
                 if (meals != null && meals.recipes != null && !meals.recipes.isEmpty()) {
                     searchCallback.loadData(meals.recipes)
                 } else {
-                    searchCallback.showEmptyView()
+                    searchCallback.noData()
                 }
             } else {
                 Log.e(TAG, "onResponseError: " + response.errorBody()!!)

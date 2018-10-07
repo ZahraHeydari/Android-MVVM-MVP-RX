@@ -19,7 +19,6 @@ class SearchPresenter(private val searchView: SearchContract.View,
     override fun start() {}
 
     override fun searchQuery(query: String) {
-        searchView.showProgressBar(true)
         searchRepository.getAllRecipesByQuery(query, SearchCallbackImp())
     }
 
@@ -27,12 +26,14 @@ class SearchPresenter(private val searchView: SearchContract.View,
 
         override fun loadData(recipes: List<Recipe>) {
             searchView.showProgressBar(false)
+            searchView.showEmptyView(false)
             searchView.setResult(recipes)
         }
 
-        override fun showEmptyView() {
+        override fun noData() {
             searchView.showProgressBar(false)
-            searchView.showEmptyView()
+            searchView.showEmptyView(true)
+            searchView.noResult()
         }
     }
 
@@ -40,7 +41,7 @@ class SearchPresenter(private val searchView: SearchContract.View,
 
         fun loadData(recipes: List<Recipe>)
 
-        fun showEmptyView()
+        fun noData()
     }
 
     companion object {

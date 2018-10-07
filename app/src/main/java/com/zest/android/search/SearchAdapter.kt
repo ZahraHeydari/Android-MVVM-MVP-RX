@@ -18,7 +18,7 @@ import com.zest.android.search.SearchAdapter.SearchViewHolder
  * Created by ZARA on 09/25/2018.
  */
 class SearchAdapter(private val searchView: SearchContract.View,
-                    private val recipes: List<Recipe>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+                    private val recipes: MutableList<Recipe>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -38,19 +38,21 @@ class SearchAdapter(private val searchView: SearchContract.View,
         return recipes.size
     }
 
+    fun removePreviousData() {
+        this.recipes.clear()
+        notifyDataSetChanged()
+    }
+
     /**
      * holder of search item
      */
     inner class SearchViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-
         internal var mImageView: ImageView = view.findViewById(R.id.search_image_view)
         internal var mTextView: TextView = view.findViewById(R.id.search_text_view)
 
-
         fun onBind(recipe: Recipe) {
             mTextView.setText(recipe.title)
-
             try {
                 Picasso.with(itemView.context)
                         .load(recipe.image)

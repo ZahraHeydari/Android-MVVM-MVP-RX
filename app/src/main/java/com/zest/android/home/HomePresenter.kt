@@ -18,7 +18,6 @@ class HomePresenter(val homeView: HomeContract.View,
     }
 
     override fun start() {
-        homeView.showEmptyView(false)
         getRecipes()
     }
 

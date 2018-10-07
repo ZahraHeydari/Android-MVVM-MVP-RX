@@ -61,21 +61,20 @@ class HomeFragment : Fragment(), HomeContract.View,
         root = inflater.inflate(R.layout.fragment_home, container, false)
         mCallback?.showFab()
         root.home_recycler_view.setAdapter(mAdapter)
-
+        //mPresenter?.getRecipes()
         return root
     }
 
     fun scrollUp() {
-        root.home_recycler_view.post({
+        root.home_recycler_view.post {
             root.home_recycler_view.smoothScrollToPosition(0)// Call smooth scroll
-        })
+        }
     }
 
     override fun onStart() {
         Log.d(TAG, "onStart() called")
         super.onStart()
         mPresenter?.start()
-        //mPresenter.getRecipes();
     }
 
 

@@ -34,7 +34,6 @@ class DetailActivity : LifecycleLoggingActivity(), DetailContract.View {
     private var mPresenter: DetailContract.UserActionsListener? = null
     private var mIsFavorite: Boolean = false
 
-
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase))
     }
@@ -43,7 +42,6 @@ class DetailActivity : LifecycleLoggingActivity(), DetailContract.View {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail)
         initCollapsingToolbarLayout()
-
         setSupportActionBar(detail_toolbar)
         if (supportActionBar != null) {
             supportActionBar?.setDisplayShowTitleEnabled(true)
@@ -51,9 +49,7 @@ class DetailActivity : LifecycleLoggingActivity(), DetailContract.View {
             supportActionBar?.setDisplayShowHomeEnabled(true)
         }
         detail_toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.colorAccent))
-
         DetailPresenter(this, DetailRepository())
-
         if (intent != null && intent.extras != null && intent.extras.containsKey(Recipe::class.java.name)) {
             mRecipe = intent.extras.getParcelable(Recipe::class.java.name) as Recipe
             loadInitialValues(mRecipe!!)

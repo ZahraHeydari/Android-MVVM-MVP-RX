@@ -12,7 +12,7 @@ keystoreProperties.load(new FileInputStream(rootProject.file("keystore.propertie
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion as Integer
-    buildToolsVersion rootProject.ext.buildToolsVersion as String
+    buildToolsVersion = '28.0.2'
     defaultConfig {
         applicationId rootProject.ext.applicationId as String
         minSdkVersion rootProject.ext.minSdkVersion as Integer
@@ -74,7 +74,7 @@ dependencies {
     implementation('com.crashlytics.sdk.android:crashlytics:2.9.5@aar') {
         transitive = true
     }
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "com.android.support:appcompat-v7:$supportLibVersion"
     implementation "com.android.support:design:$supportLibVersion"
     implementation "com.android.support:support-v4:$supportLibVersion"
@@ -91,6 +91,8 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-gson:$retrofitLibVersion"
     implementation "android.arch.persistence.room:runtime:$roomCompilerLibVersion"
     implementation "android.arch.persistence.room:rxjava2:$roomCompilerLibVersion"
+    implementation "io.reactivex.rxjava2:rxjava:2.1.14"
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
     kapt "android.arch.persistence.room:compiler:$roomCompilerLibVersion"
     annotationProcessor "org.parceler:parceler:$parcelerLibVersion"
     debugImplementation "com.amitshekhar.android:debug-db:$debugDbVersion"

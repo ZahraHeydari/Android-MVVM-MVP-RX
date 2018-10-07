@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
-import android.support.v7.widget.GridLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -59,7 +58,6 @@ class FavoriteFragment : Fragment(), FavoriteContract.View {
         root = inflater.inflate(R.layout.fragment_favorite, container, false)
 
         root.empty_text_view.setText(R.string.you_have_not_any_favorite)
-        root.favorite_recycler_view.layoutManager = GridLayoutManager(context, SPAN_COUNT)
         mAdapter = FavoriteAdapter(this, mRecipes)
         root.favorite_recycler_view.adapter = mAdapter
         checkEmptyView()

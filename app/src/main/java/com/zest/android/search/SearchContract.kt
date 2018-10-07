@@ -15,7 +15,6 @@ interface SearchContract {
 
     interface View : BaseView<UserActionsListener> {
 
-
         /**
          * to go to [com.zest.android.detail.DetailActivity]
          *
@@ -31,6 +30,11 @@ interface SearchContract {
         fun setResult(recipes: List<Recipe>)
 
         /**
+         * When the result of search is NULL!
+         */
+        fun noResult()
+
+        /**
          * To startWithFavorite loading progress bar in [SearchActivity]
          *
          * @param visibility
@@ -40,7 +44,7 @@ interface SearchContract {
         /**
          * To show EmptyView in [SearchActivity] when there is no data
          */
-        fun showEmptyView()
+        fun showEmptyView(visibility: Boolean)
 
     }
 
