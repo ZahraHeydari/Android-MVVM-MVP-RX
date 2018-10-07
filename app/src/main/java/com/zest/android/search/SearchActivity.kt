@@ -8,6 +8,8 @@ import android.os.Bundle
 import android.support.v4.view.GravityCompat
 import android.support.v4.view.MenuItemCompat
 import android.support.v7.widget.SearchView
+import android.text.TextUtils
+import android.util.Log
 import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
@@ -17,11 +19,17 @@ import com.zest.android.R
 import com.zest.android.data.Recipe
 import com.zest.android.data.source.SearchRepository
 import com.zest.android.detail.DetailActivity
+import io.reactivex.Observable
+import io.reactivex.ObservableOnSubscribe
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_search.*
 import kotlinx.android.synthetic.main.content_search.*
 import kotlinx.android.synthetic.main.empty_view.*
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 /**
  * @Author ZARA.
@@ -30,12 +38,12 @@ class SearchActivity : LifecycleLoggingActivity(), SearchContract.View {
 
 
     private var mPresenter: SearchContract.UserActionsListener? = null
-    private var mQuery: String? = null
     private var mSearchView: SearchView? = null
     private val mRecipes = ArrayList<Recipe>()
     private var mAdapter: SearchAdapter? = null
     private var mMenuSearchItem: MenuItem? = null
     private var text: String? = null
+    private lateinit var disposable: Disposable
 
 
     override fun attachBaseContext(newBase: Context) {
@@ -94,8 +102,6 @@ class SearchActivity : LifecycleLoggingActivity(), SearchContract.View {
         if (mSearchView != null) {
             mSearchView?.setSearchableInfo(searchManager.getSearchableInfo(componentName))
         }
-
-        mSearchView?.setOnQueryTextListener(OnSearchQueryTextListener())
         mSearchView?.setOnCloseListener(OnSearchCloseListener())
 
         if (intent != null && Action_SEARCH_TAG.equals(intent.action)) {
@@ -103,9 +109,52 @@ class SearchActivity : LifecycleLoggingActivity(), SearchContract.View {
             mSearchView?.setQuery(text, false)
         }
         mSearchView?.setIconified(false)
+
+        // Set up the query listener that executes the search
+        disposable = Observable.create(ObservableOnSubscribe<String> { subscriber ->
+            mSearchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    if (!TextUtils.isEmpty(newText)) {
+                        subscriber.onNext(newText!!)
+                    } else {
+                        mAdapter?.removePreviousData()
+                    }
+                    return false
+                }
+
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    //MenuItemCompat.expandActionView(mMenuSearchItem)
+                    if (!TextUtils.isEmpty(query)) {
+                        subscriber.onNext(query!!)
+                    }
+                    return false
+                }
+            })
+        })
+                .map { text -> text.toLowerCase().trim() }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .doAfterNext {
+                    showProgressBar(true)
+                    showEmptyView(false)
+                }
+                .debounce(250, TimeUnit.MILLISECONDS)
+                //.distinct()
+                .filter { text -> text.isNotBlank() }
+                .subscribe { text ->
+                    Log.d(TAG, "subscriber: $text")
+                    mPresenter?.searchQuery(text)
+                }
+
         return true
     }
 
+    override fun onStop() {
+        super.onStop()
+        if (!disposable.isDisposed) {
+            disposable.dispose()
+        }
+    }
 
     override fun onBackPressed() {
         if (mSearchView != null) {
@@ -135,11 +184,14 @@ class SearchActivity : LifecycleLoggingActivity(), SearchContract.View {
         mRecipes.clear()
         mRecipes.addAll(recipes)
         mAdapter?.notifyDataSetChanged()
-        showEmptyView()
     }
 
-    override fun showEmptyView() {
-        search_empty_view.setVisibility(if (mRecipes.isEmpty()) View.VISIBLE else View.GONE)
+    override fun noData() {
+        mAdapter?.removePreviousData()
+    }
+
+    override fun showEmptyView(visibility: Boolean) {
+        search_empty_view.setVisibility(if (visibility) View.VISIBLE else View.GONE)
     }
 
     override fun showProgressBar(visibility: Boolean) {
@@ -150,20 +202,6 @@ class SearchActivity : LifecycleLoggingActivity(), SearchContract.View {
     private inner class OnSearchCloseListener : SearchView.OnCloseListener {
         override fun onClose(): Boolean {
             finish()
-            return false
-        }
-    }
-
-
-    private inner class OnSearchQueryTextListener : SearchView.OnQueryTextListener {
-        override fun onQueryTextSubmit(query: String): Boolean {
-            mQuery = query
-            mPresenter?.searchQuery(mQuery!!)
-            MenuItemCompat.expandActionView(mMenuSearchItem)
-            return false
-        }
-
-        override fun onQueryTextChange(s: String): Boolean {
             return false
         }
     }

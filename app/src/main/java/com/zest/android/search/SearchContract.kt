@@ -31,6 +31,11 @@ interface SearchContract {
         fun setResult(recipes: List<Recipe>)
 
         /**
+         * When there is no result of search
+         * */
+        fun noData()
+
+        /**
          * To startWithFavorite loading progress bar in [SearchActivity]
          *
          * @param visibility
@@ -40,7 +45,7 @@ interface SearchContract {
         /**
          * To show EmptyView in [SearchActivity] when there is no data
          */
-        fun showEmptyView()
+        fun showEmptyView(visibility: Boolean)
 
     }
 

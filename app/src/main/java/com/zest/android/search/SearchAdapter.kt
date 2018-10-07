@@ -18,7 +18,7 @@ import com.zest.android.search.SearchAdapter.SearchViewHolder
  * Created by ZARA on 09/25/2018.
  */
 class SearchAdapter(private val searchView: SearchContract.View,
-                    private val recipes: List<Recipe>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+                    private val recipes: MutableList<Recipe>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -36,6 +36,11 @@ class SearchAdapter(private val searchView: SearchContract.View,
 
     override fun getItemCount(): Int {
         return recipes.size
+    }
+
+    fun removePreviousData(){
+        recipes.clear()
+        notifyDataSetChanged()
     }
 
     /**
