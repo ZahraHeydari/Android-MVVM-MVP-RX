@@ -91,8 +91,8 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-gson:$retrofitLibVersion"
     implementation "android.arch.persistence.room:runtime:$roomCompilerLibVersion"
     implementation "android.arch.persistence.room:rxjava2:$roomCompilerLibVersion"
-    implementation "io.reactivex.rxjava2:rxjava:2.1.14"
-    implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
+    implementation "io.reactivex.rxjava2:rxjava:$rxjavaLibVersion"
+    implementation "io.reactivex.rxjava2:rxandroid:$rxAndroidLibVersion"
     kapt "android.arch.persistence.room:compiler:$roomCompilerLibVersion"
     annotationProcessor "org.parceler:parceler:$parcelerLibVersion"
     debugImplementation "com.amitshekhar.android:debug-db:$debugDbVersion"

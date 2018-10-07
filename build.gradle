@@ -27,7 +27,8 @@ buildscript {
     ext.chipCloudLibVersion = "2.2.1"
     ext.retrofitLibVersion = "2.4.0"
     ext.roomCompilerLibVersion = "1.1.1"
-
+    ext.rxjavaLibVersion = "2.2.0"
+    ext.rxAndroidLibVersion = "2.1.0"
     repositories {
         jcenter()
         mavenCentral()
