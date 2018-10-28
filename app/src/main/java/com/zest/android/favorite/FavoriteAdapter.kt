@@ -56,10 +56,10 @@ internal class FavoriteAdapter(private val favoriteView: FavoriteContract.View,
                 e.printStackTrace()
             }
 
-            itemView.setOnClickListener{
+            containerView.setOnClickListener{
                 favoriteView.gotoDetailPage(recipe)
             }
-            favorite_image_view.setOnClickListener(OnFavoriteClickListener(recipe))
+            favorite_icon_image_view.setOnClickListener(OnFavoriteClickListener(recipe))
         }
 
 
