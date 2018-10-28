@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'org.greenrobot.greendao'
 apply plugin: 'io.fabric'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
@@ -12,7 +11,7 @@ keystoreProperties.load(new FileInputStream(rootProject.file("keystore.propertie
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion as Integer
-    buildToolsVersion = '28.0.2'
+    buildToolsVersion = '28.0.3'
     defaultConfig {
         applicationId rootProject.ext.applicationId as String
         minSdkVersion rootProject.ext.minSdkVersion as Integer
@@ -60,11 +59,10 @@ android {
     }
 }
 
-
-greendao {
-    schemaVersion rootProject.ext.greenDaoSchemaVersion
-    /*targetGenDir 'src/main/java'*/
+androidExtensions{
+    experimental = true
 }
+
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -81,10 +79,8 @@ dependencies {
     implementation "com.android.support:cardview-v7:$supportLibVersion"
     implementation "com.android.support:multidex:$multidexLibVersion"
     implementation "uk.co.chrisjenx:calligraphy:$calligraphyLibVersion"
-    implementation "org.parceler:parceler-api:$parcelerLibVersion"
     implementation "com.google.code.gson:gson:$gsonLibVersion"
     implementation "com.squareup.okhttp3:okhttp:$okhttpLibVersion"
-    implementation "org.greenrobot:greendao:$greendaoLibVersion"
     implementation "com.squareup.picasso:picasso:$picassoVersion"
     implementation "com.github.adroitandroid:ChipCloud:$chipCloudLibVersion"
     implementation "com.squareup.retrofit2:retrofit:$retrofitLibVersion"
@@ -94,7 +90,6 @@ dependencies {
     implementation "io.reactivex.rxjava2:rxandroid:$rxandroidLibVersion"
     implementation "io.reactivex.rxjava2:rxjava:$rxjavaLibVersion"
     kapt "android.arch.persistence.room:compiler:$roomCompilerLibVersion"
-    annotationProcessor "org.parceler:parceler:$parcelerLibVersion"
     debugImplementation "com.amitshekhar.android:debug-db:$debugDbVersion"
     testImplementation 'junit:junit:4.12'
 }

@@ -7,11 +7,12 @@ import android.os.Parcelable
 import android.support.annotation.NonNull
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
-import org.greenrobot.greendao.annotation.Id
-import org.greenrobot.greendao.annotation.Unique
 
+
+//val Recipe.composition = String get() = if(isFavorite) Favorited else NotFavorited
+//val Recipe.composition():String = if(isFavorite) Favorited else NotFavorited
 @Entity
-data class Recipe(@Id(autoincrement = true) @Unique var id: Long? = null,
+data class Recipe(var id: Long? = null,
                   @SerializedName("idMeal") @Expose @NonNull @PrimaryKey var recipeId: String,
                   @SerializedName("strMeal") @Expose var title: String? = null,
                   @SerializedName("strMealThumb") @Expose var image: String? = null,

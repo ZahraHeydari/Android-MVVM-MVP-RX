@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.util.Log
 import android.view.LayoutInflater
@@ -13,6 +12,7 @@ import android.view.ViewGroup
 import com.zest.android.R
 import com.zest.android.data.Recipe
 import com.zest.android.util.NetworkStateReceiver
+import com.zest.android.util.showSnackBar
 import kotlinx.android.synthetic.main.empty_view.view.*
 import kotlinx.android.synthetic.main.fragment_home.view.*
 import java.util.*
@@ -23,11 +23,10 @@ import java.util.*
  *
  * Created by ZARA on 09/25/2018.
  */
-class HomeFragment : Fragment(), HomeContract.View,
-        NetworkStateReceiver.OnNetworkStateReceiverListener {
+class HomeFragment : Fragment(), HomeContract.View, NetworkStateReceiver.OnNetworkStateReceiverListener {
 
-    private var mPresenter: HomeContract.UserActionsListener? = null
     private lateinit var root: View
+    private var mPresenter: HomeContract.UserActionsListener? = null
     private val mRecipes = ArrayList<Recipe>()
     private var mAdapter: RecipesAdapter? = null
     private var mCallback: OnHomeCallback? = null
@@ -89,7 +88,7 @@ class HomeFragment : Fragment(), HomeContract.View,
     }
 
     override fun showMessage(message: Int) {
-        Snackbar.make(root, message, Snackbar.LENGTH_LONG).setAction("Action", null).show()
+        view?.showSnackBar(message = getString(message))
     }
 
     override fun gotoDetailPage(recipe: Recipe) {
@@ -162,11 +161,11 @@ class HomeFragment : Fragment(), HomeContract.View,
         val FRAGMENT_NAME = HomeFragment::class.java.name
         private val TAG = HomeFragment::class.java.simpleName
 
-        fun newInstance(): HomeFragment {
-            val args = Bundle()
-            val fragment = HomeFragment()
-            fragment.arguments = args
-            return fragment
+
+        fun newInstance() = HomeFragment().apply{
+            arguments = Bundle().apply {
+
+            }
         }
 
     }

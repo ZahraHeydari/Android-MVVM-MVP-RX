@@ -22,7 +22,7 @@ import kotlinx.android.synthetic.main.activity_detail.*
 import kotlinx.android.synthetic.main.content_detail.*
 import kotlinx.android.synthetic.main.detail_instructions_layout.*
 import kotlinx.android.synthetic.main.detail_tag_layout.*
-import org.greenrobot.greendao.annotation.NotNull
+import org.jetbrains.annotations.NotNull
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 
 /**
@@ -113,7 +113,7 @@ class DetailActivity : LifecycleLoggingActivity(), DetailContract.View {
 
         val tags = mPresenter?.loadTags(recipe)
         if (tags != null && tags.size != 0) {
-            detail_tag_container.setVisibility(View.VISIBLE)
+            detail_tag_container.visible()
             ChipCloud.Configure()
                     .chipCloud(detail_tag_chip_cloud)
                     .labels(tags)
@@ -123,7 +123,10 @@ class DetailActivity : LifecycleLoggingActivity(), DetailContract.View {
                     .chipListener(OnChipListener(tags))
                     .build()
         }
+    }
 
+    fun View.visible() {
+        visibility = View.VISIBLE
     }
 
 
