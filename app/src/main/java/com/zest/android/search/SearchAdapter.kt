@@ -38,8 +38,9 @@ class SearchAdapter(private val searchView: SearchContract.View,
         return recipes.size
     }
 
+
     fun removePreviousData() {
-        this.recipes.clear()
+        recipes.clear()
         notifyDataSetChanged()
     }
 
@@ -72,4 +73,5 @@ class SearchAdapter(private val searchView: SearchContract.View,
 
         private val TAG = SearchAdapter::class.java.simpleName
     }
+
 }

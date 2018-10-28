@@ -30,9 +30,9 @@ interface SearchContract {
         fun setResult(recipes: List<Recipe>)
 
         /**
-         * When the result of search is NULL!
+         * When there is no result of search
          */
-        fun noResult()
+        fun noData()
 
         /**
          * To startWithFavorite loading progress bar in [SearchActivity]

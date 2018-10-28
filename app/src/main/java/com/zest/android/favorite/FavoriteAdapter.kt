@@ -6,12 +6,12 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import com.squareup.picasso.Picasso
 import com.zest.android.R
 import com.zest.android.data.Recipe
 import com.zest.android.favorite.FavoriteAdapter.FavoriteViewHolder
+import kotlinx.android.extensions.LayoutContainer
+import kotlinx.android.synthetic.main.holder_favorite.*
 
 /**
  * [android.support.v7.widget.RecyclerView.Adapter] to adapt
@@ -43,18 +43,15 @@ internal class FavoriteAdapter(private val favoriteView: FavoriteContract.View,
     /**
      * The holder of favorite
      */
-    inner class FavoriteViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class FavoriteViewHolder(override val containerView: View) : RecyclerView.ViewHolder(containerView), LayoutContainer {
 
-        internal var mTitleTextView: TextView = view.findViewById(R.id.favorite_title_text_view)
-        internal var mFavoriteImageView: ImageView = view.findViewById(R.id.favorite_icon_image_view)
-        internal var mImageView: ImageView = view.findViewById(R.id.favorite_image_view)
 
         fun onBind(recipe: Recipe) {
-            mTitleTextView.setText(recipe.title)
+            favorite_title_text_view.setText(recipe.title)
             try {
                 Picasso.with(itemView.context)
                         .load(recipe.image)
-                        .into(mImageView)
+                        .into(favorite_image_view)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -62,7 +59,7 @@ internal class FavoriteAdapter(private val favoriteView: FavoriteContract.View,
             itemView.setOnClickListener{
                 favoriteView.gotoDetailPage(recipe)
             }
-            mFavoriteImageView.setOnClickListener(OnFavoriteClickListener(recipe))
+            favorite_image_view.setOnClickListener(OnFavoriteClickListener(recipe))
         }
 
 

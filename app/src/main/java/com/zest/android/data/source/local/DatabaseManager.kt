@@ -5,6 +5,7 @@ import android.arch.persistence.room.Room
 import android.arch.persistence.room.RoomDatabase
 import android.content.Context
 import com.zest.android.MainApplication
+import com.zest.android.data.Category
 import com.zest.android.data.Recipe
 import com.zest.android.data.source.local.dao.RecipeDao
 

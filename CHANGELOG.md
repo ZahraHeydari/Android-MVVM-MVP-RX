@@ -1,5 +1,13 @@
 Changelog
 =========
+## Version 1.0.1
+__2018-28-10__
+* updated kotlin_version from `1.2.61` to `1.2.71`
+* updated buildToolsVersion from `28.0.3`
+* removed greendao library
+* set androidExtensions experimental true 
+
+
 ## Version 1.0.0
 __2018-15-09__
 * added `com.squareup.picasso:picasso:2.5.2`

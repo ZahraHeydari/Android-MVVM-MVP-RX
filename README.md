@@ -3,8 +3,9 @@
 
 A Cooking Mobile Application
 <br>
-This repository contains a detailed sample app that implements MVP architecture using GreenDao, Retrofit, 
-PlaceHolderView and AndroidDebugDatabase. At the moment, it has a simple structure but It's will be more complicated soon.
+This repository contains detailed samples app that implements MVP, MVVM architecture using Parceler,
+ Room, GreenDao, Retrofit, RX, Picasso, Calligraphy, PlaceHolderView and AndroidDebugDatabase. 
+ At the moment, it has a simple structure but It's will be more complicated soon.
 I used `https://www.themealdb.com/api.php` for the content of app with a simple UI.
 My goal of sharing this code is to fix problems and improve implementation. So I`ll be happy to hear from you!
 

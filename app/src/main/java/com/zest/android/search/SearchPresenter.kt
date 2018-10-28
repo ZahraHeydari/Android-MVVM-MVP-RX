@@ -33,7 +33,7 @@ class SearchPresenter(private val searchView: SearchContract.View,
         override fun noData() {
             searchView.showProgressBar(false)
             searchView.showEmptyView(true)
-            searchView.noResult()
+            searchView.noData()
         }
     }
 

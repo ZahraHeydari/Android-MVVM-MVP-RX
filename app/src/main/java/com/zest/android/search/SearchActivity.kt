@@ -45,6 +45,7 @@ class SearchActivity : LifecycleLoggingActivity(), SearchContract.View {
     private var text: String? = null
     private lateinit var disposable: Disposable
 
+
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase))
     }
@@ -100,12 +101,14 @@ class SearchActivity : LifecycleLoggingActivity(), SearchContract.View {
         if (mSearchView != null) {
             mSearchView?.setSearchableInfo(searchManager.getSearchableInfo(componentName))
         }
+        mSearchView?.setOnCloseListener(OnSearchCloseListener())
+
         if (intent != null && Action_SEARCH_TAG.equals(intent.action)) {
             //when received with text
             mSearchView?.setQuery(text, false)
         }
         mSearchView?.setIconified(false)
-        mSearchView?.setOnCloseListener(OnSearchCloseListener())
+
 
         // Set up the query listener that executes the search
         disposable = Observable.create(ObservableOnSubscribe<String> { subscriber ->
@@ -146,11 +149,19 @@ class SearchActivity : LifecycleLoggingActivity(), SearchContract.View {
         return true
     }
 
+
     override fun onBackPressed() {
         if (mSearchView != null) {
             finish()
         } else {
             super.onBackPressed()
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if (!disposable.isDisposed) {
+            disposable.dispose()
         }
     }
 
@@ -175,7 +186,8 @@ class SearchActivity : LifecycleLoggingActivity(), SearchContract.View {
         mAdapter?.notifyDataSetChanged()
     }
 
-    override fun noResult() {
+
+    override fun noData() {
         mAdapter?.removePreviousData()
     }
 
@@ -194,12 +206,6 @@ class SearchActivity : LifecycleLoggingActivity(), SearchContract.View {
         }
     }
 
-    override fun onStop() {
-        super.onStop()
-        if (!disposable.isDisposed) {
-            disposable.dispose()
-        }
-    }
 
     companion object {
 
