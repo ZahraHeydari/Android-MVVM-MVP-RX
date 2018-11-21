@@ -34,6 +34,12 @@ class RecipeViewModel : BaseObservable {
         this.recipeRepository = recipeRepository
         this.detailCallback = callback
         this.model.set(recipe)
+        this.model.notifyChange()
+        updateIsDetailFavorite()
+    }
+
+    private fun updateIsDetailFavorite() {
+        setIsDetailFavorite(recipeRepository.getFavoriteByRecipeId(this.model.get()!!) != null)
     }
 
     constructor(favoriteRepository: RecipeRepository, listener: OnFavoriteFragmentInteractionListener) {
@@ -182,7 +188,7 @@ class RecipeViewModel : BaseObservable {
 
     fun onDetailFavoriteClick() {
         if (model == null) return
-        if (recipeRepository.getFavoriteByRecipeId(this.model.get()!!) != null) {
+        if (isDetailFavorite.get()) {
             detailCallback.showMessage(R.string.deleted_this_recipe_from_your_favorite_list)
             recipeRepository.removeFavorite(model.get()!!)
             setIsDetailFavorite(false)
@@ -206,7 +212,6 @@ class RecipeViewModel : BaseObservable {
 
     @Bindable
     fun getIsDetailFavorite(): Boolean {
-        setIsDetailFavorite(recipeRepository.getFavoriteByRecipeId(this.model.get()!!) != null)
         return isDetailFavorite.get()
     }
 

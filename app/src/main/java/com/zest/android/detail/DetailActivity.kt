@@ -26,7 +26,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 class DetailActivity : LifecycleLoggingActivity(), OnDetailCallback {
 
     private var mRecipe: Recipe? = null
-    private var activityDetailBinding: ActivityDetailBinding? = null
+    private lateinit var activityDetailBinding: ActivityDetailBinding
     private var recipeViewModel: RecipeViewModel? = null
 
     override fun attachBaseContext(newBase: Context) {
@@ -42,20 +42,20 @@ class DetailActivity : LifecycleLoggingActivity(), OnDetailCallback {
         }
 
         recipeViewModel = RecipeViewModel(mRecipe!!, RecipeRepository(), this)
-        activityDetailBinding!!.recipeViewModel = recipeViewModel
-        activityDetailBinding!!.executePendingBindings()
+        activityDetailBinding.recipeViewModel = recipeViewModel
+        activityDetailBinding.executePendingBindings()
         initCollapsingToolbarLayout()
-        setSupportActionBar(activityDetailBinding!!.detailToolbar)
+        setSupportActionBar(activityDetailBinding.detailToolbar)
         if (supportActionBar != null) {
             supportActionBar!!.setDisplayShowTitleEnabled(true)
             supportActionBar!!.setDisplayHomeAsUpEnabled(true)
             supportActionBar!!.setDisplayShowHomeEnabled(true)
         }
-        activityDetailBinding!!.detailToolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.colorAccent))
+        activityDetailBinding.detailToolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.colorAccent))
         val tags = recipeViewModel!!.loadTags(mRecipe!!)
         if (tags != null && tags.size != 0) {
             ChipCloud.Configure()
-                    .chipCloud(activityDetailBinding!!.detailTagChipCloud)
+                    .chipCloud(activityDetailBinding.detailTagChipCloud)
                     .labels(tags)
                     .mode(ChipCloud.Mode.SINGLE)
                     .allCaps(false)
@@ -69,11 +69,11 @@ class DetailActivity : LifecycleLoggingActivity(), OnDetailCallback {
      * To set title typeface & title text color & ....
      */
     private fun initCollapsingToolbarLayout() {
-        activityDetailBinding!!.detailCollapsingToolbarLayout.setExpandedTitleTypeface(
+        activityDetailBinding.detailCollapsingToolbarLayout.setExpandedTitleTypeface(
                 FontCache.getTypeface(this, "AtlantaBook.ttf"))
-        activityDetailBinding!!.detailCollapsingToolbarLayout.setCollapsedTitleTypeface(
+        activityDetailBinding.detailCollapsingToolbarLayout.setCollapsedTitleTypeface(
                 FontCache.getTypeface(this, "AtlantaBook.ttf"))
-        activityDetailBinding!!.detailCollapsingToolbarLayout.setCollapsedTitleTextColor(
+        activityDetailBinding.detailCollapsingToolbarLayout.setCollapsedTitleTextColor(
                 ContextCompat.getColor(this, R.color.colorAccent))
     }
 
@@ -87,12 +87,8 @@ class DetailActivity : LifecycleLoggingActivity(), OnDetailCallback {
         return super.onOptionsItemSelected(item)
     }
 
-    override fun setFavoriteIcon(drawableRes: Int) {
-        activityDetailBinding!!.detailFab.setImageResource(drawableRes)
-    }
-
     override fun showMessage(stringRes: Int) {
-        Snackbar.make(activityDetailBinding!!.detailCollapsingToolbarLayout, getString(stringRes),
+        Snackbar.make(activityDetailBinding.detailCollapsingToolbarLayout, getString(stringRes),
                 Snackbar.LENGTH_LONG).setAction("Action", null).show()
     }
 

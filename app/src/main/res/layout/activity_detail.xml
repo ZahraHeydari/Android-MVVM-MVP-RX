@@ -166,8 +166,7 @@
             app:layout_anchor="@id/detail_app_bar_layout"
             app:layout_anchorGravity="bottom|end"
             android:onClick="@{()->recipeViewModel.onDetailFavoriteClick()}"
-            android:src="@{recipeViewModel.isDetailFavorite?@drawable/ic_star_full_vector:@drawable/ic_star_empty_white_vector}" />
-
+            app:setFloatingActionButtonSrc="@{recipeViewModel}" />
     </android.support.design.widget.CoordinatorLayout>
 
 </layout>

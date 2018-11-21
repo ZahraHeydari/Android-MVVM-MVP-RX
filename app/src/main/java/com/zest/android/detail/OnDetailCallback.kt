@@ -5,7 +5,5 @@ package com.zest.android.detail
  * */
 interface OnDetailCallback {
 
-    fun setFavoriteIcon(drawableRes: Int)
-
     fun showMessage(stringRes: Int)
 }

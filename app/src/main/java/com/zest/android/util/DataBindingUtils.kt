@@ -1,16 +1,12 @@
 package com.zest.android.util
 
 import android.databinding.BindingAdapter
-import android.databinding.DataBindingUtil
-import android.databinding.ViewDataBinding
-import android.support.annotation.IdRes
-import android.support.v7.widget.RecyclerView
-import android.view.LayoutInflater
-import android.view.ViewGroup
+import android.support.design.widget.FloatingActionButton
+import android.util.Log
 import android.widget.ImageView
 import com.squareup.picasso.Picasso
 import com.zest.android.R
-
+import com.zest.android.home.RecipeViewModel
 
 
 object DataBindingUtils {
@@ -26,4 +22,14 @@ object DataBindingUtils {
                 .into(imageView)
     }
 
+    @BindingAdapter(value = "setFloatingActionButtonSrc")
+    @JvmStatic
+    fun setFloatingActionButtonSrc(fab: FloatingActionButton, recipe: RecipeViewModel) {
+        Log.d(TAG, "setFloatingActionButtonSrc (line 28): ${recipe.getIsDetailFavorite()}")
+        if (recipe.getIsDetailFavorite()) {
+            fab.setImageResource(R.drawable.ic_star_full_vector)
+        } else {
+            fab.setImageResource(R.drawable.ic_star_empty_white_vector)
+        }
+    }
 }
