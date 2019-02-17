@@ -26,7 +26,7 @@ abstract class DatabaseManager : RoomDatabase() {
 
         private fun create(context: Context): DatabaseManager {
             return Room.databaseBuilder(context, DatabaseManager::class.java, DB_NAME)
-                    .allowMainThreadQueries()
+                    .allowMainThreadQueries()//to allow run tasks(queries) on main thread
                     .fallbackToDestructiveMigration()
                     .build()
         }

@@ -231,9 +231,7 @@ class SearchActivity : LifecycleLoggingActivity(), SearchContract.View {
          */
         fun startWithText(context: Context, text: String) {
             val starter = Intent(context, SearchActivity::class.java)
-            val bundle = Bundle()
             starter.putExtra(String::class.java.name, text)
-            starter.putExtras(bundle)
             starter.action = Action_SEARCH_TAG
             context.startActivity(starter)
         }

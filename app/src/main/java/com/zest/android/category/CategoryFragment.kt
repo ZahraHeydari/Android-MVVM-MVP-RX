@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import com.zest.android.R
 import com.zest.android.data.Category
-import com.zest.android.data.Recipe
 import com.zest.android.data.source.CategoryRepository
 import com.zest.android.home.OnHomeCallback
 import kotlinx.android.synthetic.main.fragment_category.view.*
@@ -95,11 +94,11 @@ class CategoryFragment : Fragment(), CategoryContract.View {
         val FRAGMENT_NAME = CategoryFragment::class.java.simpleName
         val TAG = CategoryFragment::class.java.simpleName
 
-        fun newInstance(): CategoryFragment {
-            val fragment = CategoryFragment()
-            val args = Bundle()
-            fragment.arguments = args
-            return fragment
-        }
+        fun newInstance() =
+                CategoryFragment().apply {
+                    arguments = Bundle().also {
+
+                    }
+                }
     }
 }

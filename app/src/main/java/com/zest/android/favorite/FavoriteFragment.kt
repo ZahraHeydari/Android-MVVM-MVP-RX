@@ -107,14 +107,13 @@ class FavoriteFragment : Fragment(), FavoriteContract.View {
 
         val FRAGMENT_NAME = FavoriteFragment::class.java.name
         private val TAG = FavoriteFragment::class.java.simpleName
-        private val SPAN_COUNT = 2
 
-        fun newInstance(): FavoriteFragment {
-            val args = Bundle()
-            val fragment = FavoriteFragment()
-            fragment.arguments = args
-            return fragment
-        }
+        fun newInstance() =
+                FavoriteFragment().apply {
+                    arguments = Bundle().also {
+
+                    }
+                }
     }
 
 }

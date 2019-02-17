@@ -10,29 +10,25 @@ keystoreProperties.load(new FileInputStream(rootProject.file("keystore.propertie
 
 
 android {
-    compileSdkVersion rootProject.ext.compileSdkVersion as Integer
+    compileSdkVersion 28
     buildToolsVersion = '28.0.3'
-
     defaultConfig {
-        applicationId rootProject.ext.applicationId as String
-        minSdkVersion rootProject.ext.minSdkVersion as Integer
-        targetSdkVersion rootProject.ext.targetSdkVersion as Integer
-        versionCode rootProject.ext.versionCode as Integer
-        versionName rootProject.ext.versionName as String
-        testInstrumentationRunner rootProject.ext.testInstrumentationRunner as String
+        applicationId 'com.zest.android'
+        minSdkVersion 21
+        targetSdkVersion 28
+        versionCode 101
+        versionName '1.0.1'
+        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
         vectorDrawables.useSupportLibrary = true
         // Enable multiDex support.
         multiDexEnabled true
 
-
         // BUILD CONFIG FIELDS
         buildConfigField 'String', 'BASE_URL', '"https://www.themealdb.com/api/json/v1/1/"'
     }
-
     dexOptions {
         javaMaxHeapSize = "2g"
     }
-
     signingConfigs {
         config {
             storeFile file(keystoreProperties['storeFile'])
@@ -41,7 +37,6 @@ android {
             storePassword keystoreProperties['storePassword']
         }
     }
-
     buildTypes {
 
         release {
@@ -58,6 +53,8 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    productFlavors {
+    }
 }
 
 androidExtensions{
@@ -66,7 +63,7 @@ androidExtensions{
 
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })

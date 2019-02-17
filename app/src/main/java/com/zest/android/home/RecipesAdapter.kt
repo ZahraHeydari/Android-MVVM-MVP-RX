@@ -72,23 +72,26 @@ internal class RecipesAdapter(private val homeView: HomeContract.View,
          */
         private fun checkFavorite(recipe: Recipe) {
             if (homeView.loadFavorite(recipe) != null)
-                mFavoriteImageView.setImageResource(R.drawable.ic_star_full_vector)
+                setFavoriteImage(R.drawable.ic_star_full_vector)
             else
-                mFavoriteImageView.setImageResource(R.drawable.ic_star_empty_color_text_secondary_vector)
+                setFavoriteImage(R.drawable.ic_star_empty_color_text_secondary_vector)
 
         }
 
+        private fun setFavoriteImage(drawableId:Int){
+            mFavoriteImageView.setImageResource(drawableId)
+        }
 
         private inner class OnFavoriteClickListener(private val recipe: Recipe) : View.OnClickListener {
 
             override fun onClick(view: View) {
 
                 if (homeView.loadFavorite(recipe) != null) {
-                    mFavoriteImageView.setImageResource(R.drawable.ic_star_empty_color_text_secondary_vector)
+                    setFavoriteImage(R.drawable.ic_star_empty_color_text_secondary_vector)
                     homeView.showMessage(R.string.deleted_this_recipe_from_your_favorite_list)
                     homeView.removeFavorite(recipe)
                 } else {
-                    mFavoriteImageView.setImageResource(R.drawable.ic_star_full_vector)
+                    setFavoriteImage(R.drawable.ic_star_full_vector)
                     homeView.showMessage(R.string.added_this_recipe_to_your_favorite_list)
                     homeView.insertFavorite(recipe)
                 }
