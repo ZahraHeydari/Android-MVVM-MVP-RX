@@ -59,7 +59,7 @@ class HomeFragment : Fragment(), HomeContract.View, NetworkStateReceiver.OnNetwo
                               savedInstanceState: Bundle?): View? {
         root = inflater.inflate(R.layout.fragment_home, container, false)
         mCallback?.showFab()
-        root.home_recycler_view.setAdapter(mAdapter)
+        root.home_recycler_view.adapter = mAdapter
         //mPresenter?.getRecipes()
         return root
     }
@@ -83,7 +83,7 @@ class HomeFragment : Fragment(), HomeContract.View, NetworkStateReceiver.OnNetwo
     }
 
     override fun setPresenter(presenter: HomeContract.UserActionsListener) {
-        mPresenter = checkNotNull(presenter)
+        mPresenter = presenter
     }
 
     override fun showMessage(message: Int) {
@@ -134,7 +134,7 @@ class HomeFragment : Fragment(), HomeContract.View, NetworkStateReceiver.OnNetwo
     }
 
     override fun showEmptyView(visibility: Boolean) {
-        root.home_empty_view.setVisibility(if (visibility) View.VISIBLE else View.GONE)
+        root.home_empty_view.visibility = if (visibility) View.VISIBLE else View.GONE
     }
 
     override fun onDestroy() {

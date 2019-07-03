@@ -46,16 +46,16 @@ class CategoryFragment : Fragment(), CategoryContract.View {
         root = inflater.inflate(R.layout.fragment_category, container, false)
 
         mAdapter = CategoryAdapter(this, mCategories)
-        root.category_recycler_view.setAdapter(mAdapter)
+        root.category_recycler_view.adapter = mAdapter
         mPresenter?.loadCategories()
 
         return root
     }
 
     fun scrollUp() {
-        root.category_recycler_view.post({
+        root.category_recycler_view.post {
             root.category_recycler_view.smoothScrollToPosition(0)// Call smooth scroll
-        })
+        }
     }
 
     override fun onStart() {
@@ -86,7 +86,7 @@ class CategoryFragment : Fragment(), CategoryContract.View {
     }
 
     override fun showProgressBar(visibility: Boolean) {
-        root.category_progress_bar.setVisibility(if (visibility) View.VISIBLE else View.GONE)
+        root.category_progress_bar.visibility = if (visibility) View.VISIBLE else View.GONE
     }
 
     companion object {
