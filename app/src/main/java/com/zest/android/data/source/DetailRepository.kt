@@ -15,6 +15,7 @@ import com.zest.android.data.source.remote.ServiceGenerator
  */
 class DetailRepository{
 
+    private val TAG = DetailRepository::class.java.name
     private val mApiServices: APIServices
     private val mDatabaseManager: DatabaseManager by lazy { DatabaseManager.getInstance() }
 
@@ -38,10 +39,5 @@ class DetailRepository{
 
     fun getFavoriteByRecipeId(recipe: Recipe): Recipe? {
         return mDatabaseManager.recipeDao.loadOneByRecipeId(recipe.recipeId)
-    }
-
-    companion object {
-
-        private val TAG = DetailRepository::class.java.simpleName
     }
 }

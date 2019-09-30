@@ -14,6 +14,7 @@ import com.zest.android.data.source.local.DatabaseManager
  */
 class FavoriteRepository{
 
+    private val TAG = FavoriteRepository::class.java.name
     private val mDatabaseManager: DatabaseManager by lazy { DatabaseManager.getInstance() }
 
     /**
@@ -33,10 +34,5 @@ class FavoriteRepository{
     fun deleteFavoriteRecipe(recipe: Recipe) {
         Log.d(TAG, "deleteFavoriteRecipe() called with: recipe = [$recipe]")
         mDatabaseManager.recipeDao.delete(recipe)
-    }
-
-    companion object {
-
-        private val TAG = FavoriteRepository::class.java.simpleName
     }
 }

@@ -30,6 +30,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
  */
 class DetailActivity : LifecycleLoggingActivity(), DetailContract.View {
 
+    private val TAG = DetailActivity::class.java.name
     private var mRecipe: Recipe? = null
     private var mPresenter: DetailContract.UserActionsListener? = null
     private var mIsFavorite: Boolean = false
@@ -43,16 +44,17 @@ class DetailActivity : LifecycleLoggingActivity(), DetailContract.View {
         setContentView(R.layout.activity_detail)
         initCollapsingToolbarLayout()
         setSupportActionBar(detail_toolbar)
-        if (supportActionBar != null) {
-            supportActionBar?.setDisplayShowTitleEnabled(true)
-            supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            supportActionBar?.setDisplayShowHomeEnabled(true)
-        }
+        supportActionBar?.setDisplayShowTitleEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowHomeEnabled(true)
+
         detail_toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.colorAccent))
         DetailPresenter(this, DetailRepository())
-        if (intent != null && intent.extras != null && intent.extras.containsKey(Recipe::class.java.name)) {
-            mRecipe = intent.extras.getParcelable(Recipe::class.java.name) as Recipe
-            loadInitialValues(mRecipe!!)
+        if (intent?.extras?.containsKey(Recipe::class.java.name) == true) {
+            mRecipe = intent?.extras?.getParcelable(Recipe::class.java.name) as Recipe
+            mRecipe?.let { nonNullRecipe ->
+                loadInitialValues(nonNullRecipe)
+            }
         }
     }
 
@@ -102,23 +104,26 @@ class DetailActivity : LifecycleLoggingActivity(), DetailContract.View {
             e.printStackTrace()
         }
 
-        detail_collapsing_toolbar_layout.setTitle(recipe.title)
-        detail_instructions_text_view.setText(recipe.instructions)
+        detail_collapsing_toolbar_layout.title = recipe.title
+        detail_instructions_text_view.text = recipe.instructions
 
         checkRecipeIsFavorite(recipe)
 
         val tags = mPresenter?.loadTags(recipe)
-        if (tags != null && tags.size != 0) {
-            detail_tag_container.visible()
-            ChipCloud.Configure()
-                    .chipCloud(detail_tag_chip_cloud)
-                    .labels(tags)
-                    .mode(ChipCloud.Mode.SINGLE)
-                    .allCaps(false)
-                    .gravity(FlowLayout.Gravity.CENTER)
-                    .chipListener(OnChipListener(tags))
-                    .build()
+        tags?.let { nonNullTags ->
+            if (nonNullTags.isNotEmpty()) {
+                detail_tag_container.visible()
+                ChipCloud.Configure()
+                        .chipCloud(detail_tag_chip_cloud)
+                        .labels(tags)
+                        .mode(ChipCloud.Mode.SINGLE)
+                        .allCaps(false)
+                        .gravity(FlowLayout.Gravity.CENTER)
+                        .chipListener(OnChipListener(tags))
+                        .build()
+            }
         }
+
     }
 
     fun View.visible() {
@@ -143,7 +148,7 @@ class DetailActivity : LifecycleLoggingActivity(), DetailContract.View {
 
 
     override fun setPresenter(@NotNull presenter: DetailContract.UserActionsListener) {
-        mPresenter = checkNotNull(presenter)
+        mPresenter = presenter
     }
 
     override fun navigateToSearchWithTag(tag: String) {
@@ -153,21 +158,23 @@ class DetailActivity : LifecycleLoggingActivity(), DetailContract.View {
 
     private inner class OnFABClickListener : View.OnClickListener {
         override fun onClick(view: View) {
-            if (mRecipe == null) return
-            val message: String
-            if (mIsFavorite) {
-                mIsFavorite = false
-                detail_fab.setImageResource(R.drawable.ic_star_empty_white_vector)
-                message = getString(R.string.deleted_this_recipe_from_your_favorite_list)
-                mPresenter?.removeFromFavorite(mRecipe!!)
-            } else {
-                mIsFavorite = true
-                detail_fab.setImageResource(R.drawable.ic_star_full_vector)
-                message = getString(R.string.added_this_recipe_to_your_favorite_list)
-                mPresenter?.insertToFavorite(mRecipe!!)
+            mRecipe?.let { nonNullRecipe ->
+                val message: String
+                if (mIsFavorite) {
+                    mIsFavorite = false
+                    detail_fab.setImageResource(R.drawable.ic_star_empty_white_vector)
+                    message = getString(R.string.deleted_this_recipe_from_your_favorite_list)
+                    mPresenter?.removeFromFavorite(nonNullRecipe)
+                } else {
+                    mIsFavorite = true
+                    detail_fab.setImageResource(R.drawable.ic_star_full_vector)
+                    message = getString(R.string.added_this_recipe_to_your_favorite_list)
+                    mPresenter?.insertToFavorite(nonNullRecipe)
+                }
+                Snackbar.make(detail_collapsing_toolbar_layout, message, Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show()
             }
-            Snackbar.make(detail_collapsing_toolbar_layout, message, Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
+
         }
     }
 
@@ -183,8 +190,6 @@ class DetailActivity : LifecycleLoggingActivity(), DetailContract.View {
     }
 
     companion object {
-
-        private val TAG = DetailActivity::class.java.simpleName
 
         fun start(context: Context, recipe: Recipe) {
             val starter = Intent(context, DetailActivity::class.java)

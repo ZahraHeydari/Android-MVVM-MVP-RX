@@ -32,7 +32,7 @@ interface SearchContract {
         /**
          * When there is no result of search
          */
-        fun noData()
+        fun clearData()
 
         /**
          * To startWithFavorite loading progress bar in [SearchActivity]

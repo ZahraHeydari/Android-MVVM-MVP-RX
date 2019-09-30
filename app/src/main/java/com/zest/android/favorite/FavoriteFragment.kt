@@ -21,7 +21,7 @@ import java.util.*
  */
 class FavoriteFragment : Fragment(), FavoriteContract.View {
 
-
+    private val TAG = FavoriteFragment::class.java.name
     private lateinit var root: View
     private var mCallback: OnFavoriteFragmentInteractionListener? = null
     private var mPresenter: FavoriteContract.UserActionsListener? = null
@@ -34,7 +34,7 @@ class FavoriteFragment : Fragment(), FavoriteContract.View {
         if (context is OnFavoriteFragmentInteractionListener) {
             mCallback = context
         } else {
-            throw ClassCastException(context.toString() + "must implement OnFavoriteFragmentInteractionListener!")
+            throw ClassCastException("$context must implement OnFavoriteFragmentInteractionListener!")
         }
         FavoritePresenter(this, FavoriteRepository())
     }
@@ -47,9 +47,7 @@ class FavoriteFragment : Fragment(), FavoriteContract.View {
 
     override fun onStart() {
         super.onStart()
-        if (mPresenter != null) {
-            mPresenter?.start()
-        }
+        mPresenter?.start()
     }
 
     override fun onCreateView(inflater: LayoutInflater,
@@ -73,26 +71,22 @@ class FavoriteFragment : Fragment(), FavoriteContract.View {
     }
 
     override fun setPresenter(presenter: FavoriteContract.UserActionsListener) {
-        mPresenter = checkNotNull(presenter)
+        mPresenter = presenter
     }
 
     /**
      * To check the display of empty view
      */
-    fun checkEmptyView() {
+    private fun checkEmptyView() {
         val recipes = mPresenter?.loadFavorites()
-        root.favorite_empty_view.visibility = if (recipes!!.isEmpty()) View.VISIBLE else View.GONE
+        root.favorite_empty_view.visibility = if (recipes?.isEmpty() == true) View.VISIBLE else View.GONE
     }
 
 
     override fun deleteFavorite(recipe: Recipe) {
         mPresenter?.deleteFavoriteRecipe(recipe)
-        mRecipes.clear()
-        val recipes = mPresenter!!.loadFavorites()
-        if (!recipes.isEmpty()) {
-            mRecipes.addAll(recipes)
-        }
-        mAdapter?.notifyDataSetChanged()
+        val recipes = mPresenter?.loadFavorites()
+        mAdapter?.updateData(recipes)
         checkEmptyView()
         Snackbar.make(root, getString(R.string.deleted_this_recipe_from_your_favorite_list),
                 Snackbar.LENGTH_LONG).setAction("Action", null).show()
@@ -105,12 +99,11 @@ class FavoriteFragment : Fragment(), FavoriteContract.View {
 
     companion object {
 
-        val FRAGMENT_NAME = FavoriteFragment::class.java.name
-        private val TAG = FavoriteFragment::class.java.simpleName
+        val FRAGMENT_NAME = FavoriteFragment::class.java.simpleName
 
         fun newInstance() =
                 FavoriteFragment().apply {
-                    arguments = Bundle().also {
+                    arguments = Bundle().apply {
 
                     }
                 }

@@ -15,6 +15,7 @@ import kotlinx.android.synthetic.main.activity_splash.*
  */
 class SplashActivity : LifecycleLoggingActivity() {
 
+    private val SPLASH_DISPLAY_LENGTH: Long = 1500
     private lateinit var mHandler: Handler
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,7 +23,7 @@ class SplashActivity : LifecycleLoggingActivity() {
         setContentView(R.layout.activity_splash)
 
         val zoomIn = AnimationUtils.loadAnimation(this, R.anim.zoom_in)
-        splash_image_view.setAnimation(zoomIn)
+        splash_image_view.animation = zoomIn
         splash_image_view.startAnimation(zoomIn)
 
         mHandler = Handler(Handler.Callback {
@@ -37,8 +38,5 @@ class SplashActivity : LifecycleLoggingActivity() {
         mHandler.sendEmptyMessageDelayed(1, SPLASH_DISPLAY_LENGTH)
     }
 
-    companion object {
-        private val SPLASH_DISPLAY_LENGTH: Long = 1500
-    }
 
 }

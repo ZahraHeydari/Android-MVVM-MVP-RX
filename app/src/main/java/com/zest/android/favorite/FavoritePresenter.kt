@@ -9,8 +9,8 @@ import com.zest.android.data.source.FavoriteRepository
  *
  * Created by ZARA on 09/25/2018.
  */
-class FavoritePresenter(val favoriteView: FavoriteContract.View,
-                        val favoriteRepository: FavoriteRepository) : FavoriteContract.UserActionsListener {
+class FavoritePresenter(private val favoriteView: FavoriteContract.View,
+                        private val favoriteRepository: FavoriteRepository) : FavoriteContract.UserActionsListener {
 
     init {
         favoriteView.setPresenter(this)
@@ -20,8 +20,8 @@ class FavoritePresenter(val favoriteView: FavoriteContract.View,
 
     }
 
-    override fun loadFavorites(): List<Recipe> {
-        return favoriteRepository.loadAllFavorites()!!
+    override fun loadFavorites(): List<Recipe>?{
+        return favoriteRepository.loadAllFavorites()
     }
 
     override fun deleteFavoriteRecipe(recipe: Recipe) {

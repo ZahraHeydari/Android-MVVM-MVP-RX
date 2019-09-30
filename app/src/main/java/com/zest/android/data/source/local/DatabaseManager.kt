@@ -16,7 +16,7 @@ abstract class DatabaseManager : RoomDatabase() {
 
     companion object {
 
-        private val DB_NAME = "ZestDatabase.db"
+        private val DB_NAME = "Database.db"
         private val instance: DatabaseManager  by lazy { create(MainApplication.instance) }
 
         @Synchronized

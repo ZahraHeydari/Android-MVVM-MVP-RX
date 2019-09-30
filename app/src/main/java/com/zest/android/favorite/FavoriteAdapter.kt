@@ -21,7 +21,7 @@ import kotlinx.android.synthetic.main.holder_favorite.*
  * Created by ZARA on 09/25/2018.
  */
 internal class FavoriteAdapter(private val favoriteView: FavoriteContract.View,
-                               private val recipes: List<Recipe>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+                               private val recipes: MutableList<Recipe>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return FavoriteViewHolder(LayoutInflater.from(parent.context)
@@ -40,6 +40,16 @@ internal class FavoriteAdapter(private val favoriteView: FavoriteContract.View,
         return recipes.size
     }
 
+    fun updateData(list: List<Recipe>?) {
+        recipes.clear()
+        list?.let { nonNullRecipeList ->
+            if (nonNullRecipeList.isNotEmpty()) {
+                recipes.addAll(nonNullRecipeList)
+            }
+        }
+        this.notifyDataSetChanged()
+    }
+
     /**
      * The holder of favorite
      */
@@ -47,7 +57,7 @@ internal class FavoriteAdapter(private val favoriteView: FavoriteContract.View,
 
 
         fun onBind(recipe: Recipe) {
-            favorite_title_text_view.setText(recipe.title)
+            favorite_title_text_view.text = recipe.title
             try {
                 Picasso.with(itemView.context)
                         .load(recipe.image)
@@ -56,7 +66,7 @@ internal class FavoriteAdapter(private val favoriteView: FavoriteContract.View,
                 e.printStackTrace()
             }
 
-            containerView.setOnClickListener{
+            containerView.setOnClickListener {
                 favoriteView.gotoDetailPage(recipe)
             }
             favorite_icon_image_view.setOnClickListener(OnFavoriteClickListener(recipe))

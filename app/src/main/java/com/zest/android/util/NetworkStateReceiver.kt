@@ -9,8 +9,9 @@ import java.util.HashSet
 
 class NetworkStateReceiver : BroadcastReceiver() {
 
-    protected var listeners: MutableSet<OnNetworkStateReceiverListener>
-    protected var connected: Boolean? = null
+    private val TAG = NetworkStateReceiver::class.java.name
+    private var listeners: MutableSet<OnNetworkStateReceiverListener>
+    private var connected: Boolean? = null
 
     init {
         listeners = HashSet()
@@ -32,7 +33,7 @@ class NetworkStateReceiver : BroadcastReceiver() {
 
     private fun notifyState(listener: OnNetworkStateReceiverListener?) {
         if (connected == null || listener == null) return
-        if (connected!!) listener.networkAvailable()
+        if (connected == true) listener.networkAvailable()
         else listener.networkUnavailable()
     }
 
@@ -50,10 +51,5 @@ class NetworkStateReceiver : BroadcastReceiver() {
         fun networkAvailable()
 
         fun networkUnavailable()
-    }
-
-    companion object {
-
-        private val TAG = NetworkStateReceiver::class.java.simpleName
     }
 }

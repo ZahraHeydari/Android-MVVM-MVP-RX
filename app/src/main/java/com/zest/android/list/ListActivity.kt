@@ -19,8 +19,9 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 /**
  * @Author ZARA
  */
-class ListActivity: LifecycleLoggingActivity(), OnFavoriteFragmentInteractionListener {
+class ListActivity : LifecycleLoggingActivity(), OnFavoriteFragmentInteractionListener {
 
+    private val TAG = ListActivity::class.java.name
 
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase))
@@ -29,23 +30,24 @@ class ListActivity: LifecycleLoggingActivity(), OnFavoriteFragmentInteractionLis
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list)
-
         setSupportActionBar(list_toolbar)
-        if (supportActionBar != null) {
-            supportActionBar?.setDisplayShowTitleEnabled(true)
-            supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            supportActionBar?.setDisplayShowHomeEnabled(true)
-        }
+        supportActionBar?.setDisplayShowTitleEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowHomeEnabled(true)
         list_toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.colorAccent))
 
 
-        if (intent != null && intent.action != null) {
-            when (intent.action) {
-                ACTION_FAVORITE -> ActivityUtils.addFragmentToActivity(
-                        supportFragmentManager,
-                        FavoriteFragment.newInstance(),
-                        R.id.list_container)
+        intent?.let { nonNullIntent ->
+            nonNullIntent.action?.let { nonNullAction ->
+                when (nonNullAction) {
+                    ACTION_FAVORITE -> ActivityUtils.addFragmentToActivity(
+                            supportFragmentManager,
+                            FavoriteFragment.newInstance(),
+                            R.id.list_container)
+                }
+
             }
+
         }
     }
 
@@ -65,14 +67,11 @@ class ListActivity: LifecycleLoggingActivity(), OnFavoriteFragmentInteractionLis
 
 
     override fun updateToolbarTitle(resId: Int) {
-        if (supportActionBar != null) {
-            supportActionBar?.setTitle(resId)
-        }
+        supportActionBar?.setTitle(resId)
     }
 
     companion object {
 
-        private val TAG = ListActivity::class.java.simpleName
         private val ACTION_FAVORITE = "com.zest.android.ACTION_FAVORITE"
 
         /**
@@ -82,9 +81,10 @@ class ListActivity: LifecycleLoggingActivity(), OnFavoriteFragmentInteractionLis
          * @return
          */
         fun startWithFavorite(context: Context) {
-            val starter = Intent(context, ListActivity::class.java)
-            starter.action = ACTION_FAVORITE
-            starter.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            val starter = Intent(context, ListActivity::class.java).apply {
+                this.action = ACTION_FAVORITE
+                this.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            }
             context.startActivity(starter)
         }
 

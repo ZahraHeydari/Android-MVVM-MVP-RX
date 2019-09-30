@@ -17,7 +17,7 @@ import com.zest.android.data.Category
  * Created by ZARA on 09/24/2018.
  */
 class CategoryAdapter(private val categoryView: CategoryContract.View,
-                      private val categories: List<Category>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+                      private val categories: MutableList<Category>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -33,17 +33,24 @@ class CategoryAdapter(private val categoryView: CategoryContract.View,
         (holder as CategoryViewHolder).onBind(getItem(position))
     }
 
-    fun getItem(position: Int): Category {
+    private fun getItem(position: Int): Category {
         return categories[position]
     }
 
+    fun updateData(list: List<Category>) {
+        //categories.clear()
+        categories.addAll(list)
+        this.notifyDataSetChanged()
+    }
+
+
     inner class CategoryViewHolder internal constructor(view: View) : RecyclerView.ViewHolder(view) {
 
-        internal var mTextView: TextView = view.findViewById(R.id.category_text_view)
-        internal var mImageView: ImageView = view.findViewById(R.id.category_image_view)
+        private var mTextView: TextView = view.findViewById(R.id.category_text_view)
+        private var mImageView: ImageView = view.findViewById(R.id.category_image_view)
 
         fun onBind(category: Category) {
-            mTextView.setText(category.title)
+            mTextView.text = category.title
             try {
                 Picasso.with(itemView.context)
                         .load(category.image)

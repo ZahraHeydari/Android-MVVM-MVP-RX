@@ -12,6 +12,9 @@ import com.zest.android.data.source.SearchRepository
 class SearchPresenter(private val searchView: SearchContract.View,
                       private val searchRepository: SearchRepository) : SearchContract.UserActionsListener {
 
+
+    private val TAG = SearchPresenter::class.java.name
+
     init {
         searchView.setPresenter(this)
     }
@@ -33,7 +36,7 @@ class SearchPresenter(private val searchView: SearchContract.View,
         override fun noData() {
             searchView.showProgressBar(false)
             searchView.showEmptyView(true)
-            searchView.noData()
+            searchView.clearData()
         }
     }
 
@@ -44,8 +47,4 @@ class SearchPresenter(private val searchView: SearchContract.View,
         fun noData()
     }
 
-    companion object {
-
-        private val TAG = SearchPresenter::class.java.simpleName
-    }
 }

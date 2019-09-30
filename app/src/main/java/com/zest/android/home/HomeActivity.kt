@@ -32,11 +32,8 @@ class HomeActivity : LifecycleLoggingActivity(), NavigationView.OnNavigationItem
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
-
         setSupportActionBar(home_toolbar)
-        if (supportActionBar != null) {
-            supportActionBar?.setDisplayShowTitleEnabled(false)
-        }
+        supportActionBar?.setDisplayShowTitleEnabled(false)
 
         home_toolbar_title_image_view.setOnClickListener {
             val fragmentById = supportFragmentManager.findFragmentById(R.id.home_container)

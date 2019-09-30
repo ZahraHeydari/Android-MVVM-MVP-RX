@@ -17,8 +17,6 @@ object ActivityUtils {
      */
     fun addFragmentToActivity(fragmentManager: FragmentManager,
                               fragment: Fragment, frameId: Int) {
-        checkNotNull(fragmentManager)
-        checkNotNull(fragment)
         val transaction = fragmentManager.beginTransaction()
         transaction.replace(frameId, fragment)
         transaction.commit()
@@ -37,8 +35,6 @@ object ActivityUtils {
                                   fragment: Fragment,
                                   tag: String,
                                   frameId: Int) {
-        checkNotNull(fragmentManager)
-        checkNotNull(fragment)
         fragmentManager.beginTransaction()
                 .replace(frameId, fragment, tag)
                 .addToBackStack(tag)

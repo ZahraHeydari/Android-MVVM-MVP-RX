@@ -49,8 +49,8 @@ class SearchAdapter(private val searchView: SearchContract.View,
      */
     inner class SearchViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-        internal var mImageView: ImageView = view.findViewById(R.id.search_image_view)
-        internal var mTextView: TextView = view.findViewById(R.id.search_text_view)
+        private var mImageView: ImageView = view.findViewById(R.id.search_image_view)
+        private var mTextView: TextView = view.findViewById(R.id.search_text_view)
 
         fun onBind(recipe: Recipe) {
             mTextView.setText(recipe.title)

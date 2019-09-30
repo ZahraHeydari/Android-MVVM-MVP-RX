@@ -20,6 +20,7 @@ import java.util.*
  */
 class CategoryFragment : Fragment(), CategoryContract.View {
 
+    val TAG = CategoryFragment::class.java.name
     private lateinit var root: View
     private var mPresenter: CategoryContract.UserActionsListener? = null
     private var mCallback: OnHomeCallback? = null
@@ -32,7 +33,7 @@ class CategoryFragment : Fragment(), CategoryContract.View {
         if (context is OnHomeCallback) {
             mCallback = context
         } else {
-            throw ClassCastException(context.toString() + " must implement OnHomeCallback!")
+            throw ClassCastException("$context must implement OnHomeCallback!")
         }
         mCallback?.hideFab()
     }
@@ -60,9 +61,7 @@ class CategoryFragment : Fragment(), CategoryContract.View {
 
     override fun onStart() {
         super.onStart()
-        if (mPresenter != null) {
-            mPresenter?.start()
-        }
+        mPresenter?.start()
     }
 
     override fun onDetach() {
@@ -73,7 +72,7 @@ class CategoryFragment : Fragment(), CategoryContract.View {
 
 
     override fun setPresenter(presenter: CategoryContract.UserActionsListener) {
-        mPresenter = checkNotNull(presenter)
+        mPresenter = presenter
     }
 
     override fun showSubCategories(category: Category) {
@@ -81,8 +80,7 @@ class CategoryFragment : Fragment(), CategoryContract.View {
     }
 
     override fun setResult(categories: List<Category>) {
-        mCategories.addAll(categories)
-        mAdapter?.notifyDataSetChanged()
+        mAdapter?.updateData(categories)
     }
 
     override fun showProgressBar(visibility: Boolean) {
@@ -92,11 +90,11 @@ class CategoryFragment : Fragment(), CategoryContract.View {
     companion object {
 
         val FRAGMENT_NAME = CategoryFragment::class.java.simpleName
-        val TAG = CategoryFragment::class.java.simpleName
+
 
         fun newInstance() =
                 CategoryFragment().apply {
-                    arguments = Bundle().also {
+                    arguments = Bundle().apply {
 
                     }
                 }

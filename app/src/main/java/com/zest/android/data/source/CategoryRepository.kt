@@ -20,6 +20,8 @@ import retrofit2.Response
  */
 class CategoryRepository {
 
+
+    private val TAG = CategoryRepository::class.java.name
     private var mApiServices: APIServices? = null
     private val mDatabaseManager: DatabaseManager by lazy { DatabaseManager.getInstance() }
 
@@ -44,24 +46,22 @@ class CategoryRepository {
         override fun onResponse(call: Call<CategoryResponse>, response: Response<CategoryResponse>) {
             Log.d(TAG, "onResponse() called with: call = [" + call + "], response = [" + response.raw() + "]")
             if (response.isSuccessful) {
-                Log.i(TAG, "onResponseBody: " + response.body()!!)
+                Log.i(TAG, "onResponseBody: " + response.body())
                 val categoryResponse = response.body()
-                if (categoryResponse != null && categoryResponse.categories != null && !categoryResponse.categories.isEmpty()) {
-                    categoriesCallback.loadData(categoryResponse.categories)
+                categoryResponse?.categories?.let { nonNullCategoriesData ->
+                    if (nonNullCategoriesData.isNotEmpty()) {
+                        categoriesCallback.loadData(nonNullCategoriesData)
+                    }
                 }
+
             } else {
-                Log.e(TAG, "onResponseError: " + response.errorBody()!!)
+                Log.e(TAG, "onResponseError: " + response.errorBody())
             }
         }
 
         override fun onFailure(call: Call<CategoryResponse>, t: Throwable) {
             t.printStackTrace()
         }
-    }
-
-    companion object {
-
-        private val TAG = CategoryRepository::class.java.simpleName
     }
 
 

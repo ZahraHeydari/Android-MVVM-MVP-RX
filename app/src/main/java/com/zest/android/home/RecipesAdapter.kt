@@ -21,6 +21,7 @@ import com.zest.android.home.RecipesAdapter.RecipeViewHolder
 internal class RecipesAdapter(private val homeView: HomeContract.View,
                               private val recipes: List<Recipe>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
+    private val TAG = RecipesAdapter::class.java.name
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return RecipeViewHolder(LayoutInflater.from(parent.context)
@@ -44,12 +45,12 @@ internal class RecipesAdapter(private val homeView: HomeContract.View,
      */
     inner class RecipeViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-        internal var mTitleTextView: TextView = view.findViewById(R.id.recipe_title_text_view)
-        internal var mImageView: ImageView = view.findViewById(R.id.recipe_image_view)
-        internal var mFavoriteImageView: ImageView = view.findViewById(R.id.recipe_favorite_image_view)
+        private var mTitleTextView: TextView = view.findViewById(R.id.recipe_title_text_view)
+        private var mImageView: ImageView = view.findViewById(R.id.recipe_image_view)
+        private var mFavoriteImageView: ImageView = view.findViewById(R.id.recipe_favorite_image_view)
 
         fun onBind(recipe: Recipe) {
-            mTitleTextView.setText(recipe.title)
+            mTitleTextView.text = recipe.title
             try {
                 Picasso.with(mImageView.context)
                         .load(recipe.image)
@@ -71,14 +72,11 @@ internal class RecipesAdapter(private val homeView: HomeContract.View,
          * @param recipe
          */
         private fun checkFavorite(recipe: Recipe) {
-            if (homeView.loadFavorite(recipe) != null)
-                setFavoriteImage(R.drawable.ic_star_full_vector)
-            else
-                setFavoriteImage(R.drawable.ic_star_empty_color_text_secondary_vector)
-
+            setFavoriteImage(if (homeView.loadFavorite(recipe) != null) R.drawable.ic_star_full_vector
+            else R.drawable.ic_star_empty_color_text_secondary_vector)
         }
 
-        private fun setFavoriteImage(drawableId:Int){
+        private fun setFavoriteImage(drawableId: Int) {
             mFavoriteImageView.setImageResource(drawableId)
         }
 
@@ -97,11 +95,6 @@ internal class RecipesAdapter(private val homeView: HomeContract.View,
                 }
             }
         }
-    }
-
-    companion object {
-
-        private val TAG = RecipesAdapter::class.java.simpleName
     }
 
 

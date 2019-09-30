@@ -20,6 +20,7 @@ import retrofit2.Response
  */
 class SearchRepository {
 
+    private val TAG = SearchRepository::class.java.name
     private val mApiServices: APIServices
     private val mDatabaseManager: DatabaseManager by lazy { DatabaseManager.getInstance() }
 
@@ -38,13 +39,12 @@ class SearchRepository {
 
         override fun onResponse(call: Call<RecipeResponse>, response: Response<RecipeResponse>) {
             Log.d(TAG, "onResponse() called with: call = [" + call + "], response = [" + response.raw() + "]")
-            if (response.isSuccessful()) {
-                Log.i(TAG, "onResponseBody: " + response.body()!!)
-                val meals = response.body()
-                if (meals != null && meals.recipes != null && !meals.recipes.isEmpty()) {
-                    searchCallback.loadData(meals.recipes)
-                } else {
-                    searchCallback.noData()
+            if (response.isSuccessful) {
+                Log.i(TAG, "onResponseBody: " + response.body())
+                val responseBody = response.body()
+                responseBody?.recipes?.let { nonNullData ->
+                    if (nonNullData.isEmpty()) searchCallback.loadData(nonNullData)
+                    else searchCallback.noData()
                 }
             } else {
                 Log.e(TAG, "onResponseError: " + response.errorBody()!!)
@@ -56,8 +56,4 @@ class SearchRepository {
         }
     }
 
-    companion object {
-
-        private val TAG = SearchRepository::class.java.simpleName
-    }
 }

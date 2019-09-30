@@ -17,7 +17,7 @@ class MainApplication : Application() {
 
     companion object {
 
-        private val TAG = MainApplication::class.java.simpleName
+        private val TAG = MainApplication::class.java.name
         var instance: MainApplication by Delegates.notNull()
     }
 

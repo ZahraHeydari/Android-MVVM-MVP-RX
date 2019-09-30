@@ -46,7 +46,7 @@ class DetailPresenter(private val detailView: DetailContract.View,
         Log.d(TAG, "loadTags() called with: recipe = [$recipe]")
         val tags = recipe.tag
         if (TextUtils.isEmpty(tags)) return null
-        val splitTags = tags?.split(",".toRegex())?.dropLastWhile({ it.isEmpty() })?.toTypedArray()
+        val splitTags = tags?.split(",".toRegex())?.dropLastWhile { it.isEmpty() }?.toTypedArray()
         return splitTags
     }
 

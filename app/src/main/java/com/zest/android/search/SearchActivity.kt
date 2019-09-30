@@ -37,6 +37,7 @@ import java.util.concurrent.TimeUnit
  */
 class SearchActivity : LifecycleLoggingActivity(), SearchContract.View {
 
+    private val TAG = SearchActivity::class.java.name
     private var mPresenter: SearchContract.UserActionsListener? = null
     private var mSearchView: SearchView? = null
     private val mRecipes = ArrayList<Recipe>()
@@ -53,24 +54,21 @@ class SearchActivity : LifecycleLoggingActivity(), SearchContract.View {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
-
         setSupportActionBar(search_toolbar)
-        if (supportActionBar != null) {
-            supportActionBar?.setDisplayShowTitleEnabled(false)
-            supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            supportActionBar?.setDisplayShowHomeEnabled(true)
-        }
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowHomeEnabled(true)
         empty_text_view.setText(R.string.no_result)
 
         SearchPresenter(this, SearchRepository())
         mAdapter = SearchAdapter(this, mRecipes)
-        search_recycler_view.setAdapter(mAdapter)
+        search_recycler_view.adapter = mAdapter
 
-        if (intent != null && Action_SEARCH_TAG.equals(intent.action)) {
-            if (intent != null && intent.extras != null && intent.extras.containsKey(String::class.java.name)) {
-                text = intent.extras.getString(String::class.java.name)
-                showProgressBar(true)
-                mPresenter?.searchQuery(text!!)
+        if (Action_SEARCH_TAG == intent?.action && intent?.extras?.containsKey(String::class.java.name) == true) {
+            text = intent?.extras?.getString(String::class.java.name)
+            showProgressBar(true)
+            text?.let { nonNullText ->
+                mPresenter?.searchQuery(nonNullText)
             }
         }
     }
@@ -93,21 +91,19 @@ class SearchActivity : LifecycleLoggingActivity(), SearchContract.View {
         mMenuSearchItem = menu.findItem(R.id.search)
         mMenuSearchItem?.expandActionView()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            mSearchView?.setForegroundGravity(GravityCompat.RELATIVE_LAYOUT_DIRECTION)
+            mSearchView?.foregroundGravity = GravityCompat.RELATIVE_LAYOUT_DIRECTION
         }
         mSearchView?.setHorizontalGravity(Gravity.END)
-        mSearchView?.setQueryHint(getString(R.string.action_search))
+        mSearchView?.queryHint = getString(R.string.action_search)
         val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
-        if (mSearchView != null) {
-            mSearchView?.setSearchableInfo(searchManager.getSearchableInfo(componentName))
-        }
+        mSearchView?.setSearchableInfo(searchManager.getSearchableInfo(componentName))
         mSearchView?.setOnCloseListener(OnSearchCloseListener())
 
-        if (intent != null && Action_SEARCH_TAG.equals(intent.action)) {
+        if (Action_SEARCH_TAG == intent?.action) {
             //when received with text
             mSearchView?.setQuery(text, false)
         }
-        mSearchView?.setIconified(false)
+        mSearchView?.isIconified = false
 
 
         // Set up the query listener that executes the search
@@ -167,13 +163,11 @@ class SearchActivity : LifecycleLoggingActivity(), SearchContract.View {
 
     override fun onStart() {
         super.onStart()
-        if (mPresenter != null) {
-            mPresenter?.start()
-        }
+        mPresenter?.start()
     }
 
     override fun setPresenter(presenter: SearchContract.UserActionsListener) {
-        mPresenter = checkNotNull(presenter)
+        mPresenter = presenter
     }
 
     override fun gotoDetailPage(recipe: Recipe) {
@@ -187,16 +181,16 @@ class SearchActivity : LifecycleLoggingActivity(), SearchContract.View {
     }
 
 
-    override fun noData() {
+    override fun clearData() {
         mAdapter?.removePreviousData()
     }
 
     override fun showEmptyView(visibility: Boolean) {
-        search_empty_view.setVisibility(if (visibility) View.VISIBLE else View.GONE)
+        search_empty_view.visibility = if (visibility) View.VISIBLE else View.GONE
     }
 
     override fun showProgressBar(visibility: Boolean) {
-        search_progress_bar.setVisibility(if (visibility) View.VISIBLE else View.GONE)
+        search_progress_bar.visibility = if (visibility) View.VISIBLE else View.GONE
     }
 
     private inner class OnSearchCloseListener : SearchView.OnCloseListener {
@@ -209,7 +203,6 @@ class SearchActivity : LifecycleLoggingActivity(), SearchContract.View {
 
     companion object {
 
-        private val TAG = SearchActivity::class.java.simpleName
         private val Action_SEARCH_TAG = "com.zest.android.ACTION_SEARCH_TAG"
 
         /**
@@ -230,9 +223,10 @@ class SearchActivity : LifecycleLoggingActivity(), SearchContract.View {
          * @return
          */
         fun startWithText(context: Context, text: String) {
-            val starter = Intent(context, SearchActivity::class.java)
-            starter.putExtra(String::class.java.name, text)
-            starter.action = Action_SEARCH_TAG
+            val starter = Intent(context, SearchActivity::class.java).apply {
+                this.putExtra(String::class.java.name, text)
+                this.action = Action_SEARCH_TAG
+            }
             context.startActivity(starter)
         }
     }

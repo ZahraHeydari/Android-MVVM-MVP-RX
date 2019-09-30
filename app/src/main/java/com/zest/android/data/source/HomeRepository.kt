@@ -21,6 +21,8 @@ import retrofit2.Response
  */
 class HomeRepository {
 
+
+    private val TAG = HomeRepository::class.java.name
     private val mApiServices: APIServices
     private val mDatabaseManager: DatabaseManager by lazy { DatabaseManager.getInstance() }
 
@@ -64,12 +66,15 @@ class HomeRepository {
         override fun onResponse(call: Call<RecipeResponse>, response: Response<RecipeResponse>) {
             Log.d(TAG, "getRecipes onResponse() called with: call = [" + call
                     + "], response = [" + response.raw() + "]")
-            if (response.isSuccessful()) {
+            if (response.isSuccessful) {
                 Log.i(TAG, "getRecipes onResponseBody: " + response.body()!!)
-                val meals = response.body()
-                if (meals != null && !meals.recipes.isEmpty()) {
-                    recipesCallbackImp.onLoadList(meals.recipes)
+                val responseBody = response.body()
+                responseBody?.let{nonNullResponse->
+                    if (nonNullResponse.recipes.isNotEmpty()) {
+                        recipesCallbackImp.onLoadList(nonNullResponse.recipes)
+                    }
                 }
+
             } else {
                 Log.e(TAG, "getRecipes onResponseError ")
             }
@@ -80,8 +85,4 @@ class HomeRepository {
         }
     }
 
-    companion object {
-
-        private val TAG = HomeRepository::class.java.simpleName
-    }
 }

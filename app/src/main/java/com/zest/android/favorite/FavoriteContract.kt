@@ -45,7 +45,7 @@ interface FavoriteContract {
         /**
          * To load all favorites
          */
-        fun loadFavorites(): List<Recipe>
+        fun loadFavorites(): List<Recipe>?
 
 
         /**

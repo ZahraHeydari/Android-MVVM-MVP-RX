@@ -11,7 +11,7 @@ import com.zest.android.data.source.HomeRepository
  * Created by ZARA on 08/06/2018.
  */
 class HomePresenter(val homeView: HomeContract.View,
-                    val homeRepository: HomeRepository) : HomeContract.UserActionsListener {
+                    private val homeRepository: HomeRepository) : HomeContract.UserActionsListener {
 
     init {
         homeView.setPresenter(this)

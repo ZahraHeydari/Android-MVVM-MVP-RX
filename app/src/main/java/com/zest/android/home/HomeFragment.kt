@@ -23,8 +23,9 @@ import java.util.*
  *
  * Created by ZARA on 09/25/2018.
  */
-class HomeFragment : Fragment(), HomeContract.View, NetworkStateReceiver.OnNetworkStateReceiverListener {
+open class HomeFragment : Fragment(), HomeContract.View, NetworkStateReceiver.OnNetworkStateReceiverListener {
 
+    private val TAG = HomeFragment::class.java.name
     private lateinit var root: View
     private var mPresenter: HomeContract.UserActionsListener? = null
     private val mRecipes = ArrayList<Recipe>()
@@ -48,9 +49,7 @@ class HomeFragment : Fragment(), HomeContract.View, NetworkStateReceiver.OnNetwo
 
         mNetworkReceiver = NetworkStateReceiver()
         mNetworkReceiver?.addListener(this)
-        if (context != null) {
-            context?.registerReceiver(mNetworkReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
-        }
+        context?.registerReceiver(mNetworkReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
     }
 
 
@@ -116,7 +115,7 @@ class HomeFragment : Fragment(), HomeContract.View, NetworkStateReceiver.OnNetwo
     }
 
     override fun showProgressBar(visibility: Boolean) {
-        root.home_progress_bar.setVisibility(if (visibility) View.VISIBLE else View.GONE)
+        root.home_progress_bar.visibility = if (visibility) View.VISIBLE else View.GONE
     }
 
     override fun networkAvailable() {
@@ -143,12 +142,10 @@ class HomeFragment : Fragment(), HomeContract.View, NetworkStateReceiver.OnNetwo
         unregisterNetworkChanges()
     }
 
-    protected fun unregisterNetworkChanges() {
+    private fun unregisterNetworkChanges() {
         Log.d(TAG, "unregisterNetworkChanges() called")
         try {
-            if (context != null) {
-                context?.unregisterReceiver(mNetworkReceiver)
-            }
+            context?.unregisterReceiver(mNetworkReceiver)
         } catch (e: IllegalArgumentException) {
             e.printStackTrace()
         }
@@ -157,11 +154,10 @@ class HomeFragment : Fragment(), HomeContract.View, NetworkStateReceiver.OnNetwo
 
     companion object {
 
-        val FRAGMENT_NAME = HomeFragment::class.java.name
-        private val TAG = HomeFragment::class.java.simpleName
+        val FRAGMENT_NAME = HomeFragment::class.java.simpleName
 
 
-        fun newInstance() = HomeFragment().apply{
+        fun newInstance() = HomeFragment().apply {
             arguments = Bundle().apply {
 
             }
