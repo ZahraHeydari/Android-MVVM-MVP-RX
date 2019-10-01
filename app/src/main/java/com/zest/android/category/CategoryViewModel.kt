@@ -7,6 +7,7 @@ import android.databinding.ObservableField
 import com.zest.android.data.Category
 import com.zest.android.data.source.CategoryRepository
 
+
 class CategoryViewModel : BaseObservable {
 
     private lateinit var categoryRepository: CategoryRepository

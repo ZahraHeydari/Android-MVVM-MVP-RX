@@ -26,7 +26,6 @@ import java.util.*
  */
 class HomeFragment : Fragment(), NetworkStateReceiver.OnNetworkStateReceiverListener, OnHomeFragmentInteractionListener {
 
-
     private val TAG = HomeFragment::class.java.name
     private val mRecipes = ArrayList<Recipe>()
     private var mAdapter: RecipesAdapter? = null
@@ -35,8 +34,6 @@ class HomeFragment : Fragment(), NetworkStateReceiver.OnNetworkStateReceiverList
     private lateinit var fragmentHomeBinding: FragmentHomeBinding
     lateinit var recipeViewModel: RecipeViewModel
     private var mEmptyTextView: TextView? = null
-
-
     override fun onAttach(context: Context?) {
         super.onAttach(context)
         if (context is OnHomeCallback) {
@@ -136,7 +133,6 @@ class HomeFragment : Fragment(), NetworkStateReceiver.OnNetworkStateReceiverList
     private fun unregisterNetworkChanges() {
         Log.d(TAG, "unregisterNetworkChanges() called")
         context?.unregisterReceiver(mNetworkReceiver)
-
     }
 
     companion object {

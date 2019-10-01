@@ -21,6 +21,7 @@ import java.util.*
 class CategoryAdapter(private val listener: OnCategoryFragmentInteractionListener) :
         RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
+
     private val TAG = CategoryAdapter::class.java.name
     private val categories: MutableList<Category> = ArrayList()
 
@@ -55,6 +56,7 @@ class CategoryAdapter(private val listener: OnCategoryFragmentInteractionListene
     private inner class CategoryViewHolder(viewDataBinding: ViewDataBinding) : DataBindingViewHolder<Category>(viewDataBinding) {
 
         override fun onBind(t: Category) {
+
             (this.dataBinding as HolderCategoryBinding).categoryViewModel = CategoryViewModel(t, listener)
         }
     }

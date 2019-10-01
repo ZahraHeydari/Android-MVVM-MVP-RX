@@ -27,6 +27,7 @@ import com.zest.android.list.OnListCallback
  */
 class FavoriteFragment : Fragment(), OnFavoriteFragmentInteractionListener {
 
+
     private val TAG = FavoriteFragment::class.java.name
     private var mCallback: OnListCallback? = null
     private lateinit var fragmentFavoriteBinding: FragmentFavoriteBinding

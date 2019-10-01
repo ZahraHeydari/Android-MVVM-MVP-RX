@@ -30,6 +30,7 @@ class RecipeViewModel : BaseObservable {
     private val isDetailFavorite = ObservableBoolean(false)
 
 
+
     constructor(recipe: Recipe?, recipeRepository: RecipeRepository, callback: OnDetailCallback) {
         this.recipeRepository = recipeRepository
         this.detailCallback = callback

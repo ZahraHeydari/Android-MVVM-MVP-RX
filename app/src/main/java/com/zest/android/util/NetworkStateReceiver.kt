@@ -13,7 +13,6 @@ class NetworkStateReceiver : BroadcastReceiver() {
     private var listeners: MutableSet<OnNetworkStateReceiverListener> = HashSet()
     private var connected: Boolean? = null
 
-
     override fun onReceive(context: Context, intent: Intent) {
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val activeNetInfo = connectivityManager.activeNetworkInfo

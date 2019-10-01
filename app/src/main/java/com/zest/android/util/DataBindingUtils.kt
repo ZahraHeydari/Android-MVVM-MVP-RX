@@ -13,6 +13,7 @@ object DataBindingUtils {
 
     private val TAG = DataBindingUtils::class.java.simpleName
 
+
     @BindingAdapter("onLoadImage")
     @JvmStatic
     fun onLoadImage(imageView: ImageView, url: String) {

@@ -3,7 +3,7 @@ package com.zest.android.category
 import com.zest.android.data.Category
 
 /**
- * To make an interaction between [CategoryFragment] and [CategoryViewModel]
+ * To make an interaction between [CategoryFragment] and [CategoryViewModel]f
  *
  * Created by ZARA on 09/30/2018.
  */

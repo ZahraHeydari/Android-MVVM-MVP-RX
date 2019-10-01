@@ -20,6 +20,7 @@ import com.zest.android.home.OnHomeCallback
  */
 class CategoryFragment : Fragment(), OnCategoryFragmentInteractionListener {
 
+
     private val TAG = CategoryFragment::class.java.name
     private var mAdapter: CategoryAdapter? = null
     private var mCallback: OnHomeCallback? = null

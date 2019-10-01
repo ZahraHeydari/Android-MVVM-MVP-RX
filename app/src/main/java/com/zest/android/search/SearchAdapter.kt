@@ -23,6 +23,7 @@ class SearchAdapter(private val callback: OnSearchCallback) : RecyclerView.Adapt
     private val TAG = SearchAdapter::class.java.name
     private val recipes: MutableList<Recipe> = ArrayList()
 
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val holderSearchBinding = DataBindingUtil
                 .inflate<HolderSearchBinding>(LayoutInflater.from(parent.context),
@@ -62,4 +63,5 @@ class SearchAdapter(private val callback: OnSearchCallback) : RecyclerView.Adapt
             (this.dataBinding as HolderSearchBinding).recipeViewModel = RecipeViewModel(recipe, callback)
         }
     }
+
 }

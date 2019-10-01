@@ -27,6 +27,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
  */
 class HomeActivity : LifecycleLoggingActivity(), NavigationView.OnNavigationItemSelectedListener, OnHomeCallback {
 
+
     private val TAG = HomeActivity::class.java.name
     private lateinit var activityHomeBinding: ActivityHomeBinding
 

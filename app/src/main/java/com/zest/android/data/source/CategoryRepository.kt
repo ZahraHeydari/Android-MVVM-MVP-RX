@@ -21,6 +21,7 @@ import retrofit2.Response
  */
 class CategoryRepository {
 
+
     private val TAG = CategoryRepository::class.java.name
     private val mApiServices: APIServices
     private val mDatabaseManager: DatabaseManager by lazy { DatabaseManager.getInstance() }

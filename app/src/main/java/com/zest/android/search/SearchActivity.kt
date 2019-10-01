@@ -29,6 +29,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
  */
 class SearchActivity : LifecycleLoggingActivity(), OnSearchCallback {
 
+
     private val TAG = SearchActivity::class.java.name
     private var mQuery: String? = null
     private var mSearchView: SearchView? = null

@@ -16,6 +16,7 @@ import com.zest.android.home.HomeActivity
  */
 class SplashActivity : AppCompatActivity() {
 
+
     private val SPLASH_DISPLAY_LENGTH: Long = 1500
     private var mHandler: Handler? = null
     private var activitySplashBinding: ActivitySplashBinding? = null

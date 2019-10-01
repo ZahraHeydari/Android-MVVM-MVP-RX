@@ -21,7 +21,9 @@ import com.zest.android.util.DataBindingViewHolder
 internal class FavoriteAdapter(private val listener: OnFavoriteFragmentInteractionListener)
     : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
+
     private var recipes: MutableList<Recipe> = ArrayList()
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val holderFavoriteBinding =

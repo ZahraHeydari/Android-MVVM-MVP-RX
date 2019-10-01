@@ -60,5 +60,4 @@ internal class RecipesAdapter(private val listener: OnHomeFragmentInteractionLis
                     RecipeRepository(), listener)
         }
     }
-
 }

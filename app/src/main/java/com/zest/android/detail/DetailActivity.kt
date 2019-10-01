@@ -25,7 +25,6 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
  */
 class DetailActivity : LifecycleLoggingActivity(), OnDetailCallback {
 
-
     private val TAG = DetailActivity::class.java.name
     private var mRecipe: Recipe? = null
     private lateinit var activityDetailBinding: ActivityDetailBinding
