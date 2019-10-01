@@ -2,36 +2,39 @@ package com.zest.android.home
 
 import android.content.Context
 import android.content.IntentFilter
+import android.databinding.DataBindingUtil
 import android.net.ConnectivityManager
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import com.zest.android.R
 import com.zest.android.data.Recipe
+import com.zest.android.data.source.RecipeRepository
+import com.zest.android.databinding.FragmentHomeBinding
 import com.zest.android.util.NetworkStateReceiver
-import com.zest.android.util.showSnackBar
-import kotlinx.android.synthetic.main.empty_view.view.*
-import kotlinx.android.synthetic.main.fragment_home.view.*
 import java.util.*
-
 
 /**
  * Display a grid of [Recipe]s. User can choose to view each recipe.
  *
- * Created by ZARA on 09/25/2018.
+ * Created by ZARA on 08/10/2018.
  */
-open class HomeFragment : Fragment(), HomeContract.View, NetworkStateReceiver.OnNetworkStateReceiverListener {
+class HomeFragment : Fragment(), NetworkStateReceiver.OnNetworkStateReceiverListener, OnHomeFragmentInteractionListener {
+
 
     private val TAG = HomeFragment::class.java.name
-    private lateinit var root: View
-    private var mPresenter: HomeContract.UserActionsListener? = null
     private val mRecipes = ArrayList<Recipe>()
     private var mAdapter: RecipesAdapter? = null
     private var mCallback: OnHomeCallback? = null
     private var mNetworkReceiver: NetworkStateReceiver? = null
+    private lateinit var fragmentHomeBinding: FragmentHomeBinding
+    lateinit var recipeViewModel: RecipeViewModel
+    private var mEmptyTextView: TextView? = null
 
 
     override fun onAttach(context: Context?) {
@@ -39,54 +42,49 @@ open class HomeFragment : Fragment(), HomeContract.View, NetworkStateReceiver.On
         if (context is OnHomeCallback) {
             mCallback = context
         } else {
-            throw ClassCastException(context.toString() + "must implement OnHomeCallback!")
+            throw ClassCastException("$context must implement OnHomeCallback!")
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mAdapter = RecipesAdapter(this, mRecipes)
-
+        mAdapter = RecipesAdapter(this)
         mNetworkReceiver = NetworkStateReceiver()
         mNetworkReceiver?.addListener(this)
         context?.registerReceiver(mNetworkReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
     }
 
+    fun scrollUp() {
+        fragmentHomeBinding.homeRecyclerView.post {
+            fragmentHomeBinding.homeRecyclerView.smoothScrollToPosition(0)// Call smooth scroll
+        }
+    }
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        root = inflater.inflate(R.layout.fragment_home, container, false)
-        mCallback?.showFab()
-        root.home_recycler_view.adapter = mAdapter
-        //mPresenter?.getRecipes()
-        return root
-    }
+        fragmentHomeBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false)
+        recipeViewModel = RecipeViewModel(RecipeRepository(), this)
+        fragmentHomeBinding.recipeViewModel = recipeViewModel
+        fragmentHomeBinding.executePendingBindings()
+        mEmptyTextView = fragmentHomeBinding.homeEmptyView.findViewById(R.id.empty_text_view)
+        mEmptyTextView?.text = getString(R.string.there_is_no_recipe)
+        mCallback?.showFab(true)
+        fragmentHomeBinding.homeRecyclerView.adapter = mAdapter
+        recipeViewModel.getRecipes()
 
-    fun scrollUp() {
-        root.home_recycler_view.post {
-            root.home_recycler_view.smoothScrollToPosition(0)// Call smooth scroll
-        }
+        return fragmentHomeBinding.root
     }
-
-    override fun onStart() {
-        Log.d(TAG, "onStart() called")
-        super.onStart()
-        mPresenter?.start()
-    }
-
 
     override fun onDetach() {
         super.onDetach()
         mCallback = null
-    }
-
-    override fun setPresenter(presenter: HomeContract.UserActionsListener) {
-        mPresenter = presenter
+        mAdapter = null
     }
 
     override fun showMessage(message: Int) {
-        view?.showSnackBar(message = getString(message))
+        Snackbar.make(fragmentHomeBinding.root, message, Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show()
     }
 
     override fun gotoDetailPage(recipe: Recipe) {
@@ -95,32 +93,26 @@ open class HomeFragment : Fragment(), HomeContract.View, NetworkStateReceiver.On
 
     override fun loadRecipes(recipes: List<Recipe>) {
         Log.d(TAG, "loadRecipes() called with: mRecipes = [$recipes]")
-        mRecipes.clear()
-        mRecipes.addAll(recipes)
-        mAdapter?.notifyDataSetChanged()
+        mAdapter?.addData(recipes)
     }
 
-    override fun loadFavorite(recipe: Recipe): Recipe? {
-        return mPresenter?.loadFavoriteByRecipeId(recipe)
+    override fun loadFavorite(recipe: Recipe): Recipe?{
+        return recipeViewModel.loadFavoriteByRecipeId(recipe)
     }
 
     override fun removeFavorite(recipe: Recipe) {
         Log.d(TAG, "removeFavorite() called with: recipe = [$recipe]")
-        mPresenter?.deleteFavoriteByRecipeId(recipe)
+        recipeViewModel.deleteFavoriteByRecipeId(recipe)
     }
 
     override fun insertFavorite(recipe: Recipe) {
         Log.d(TAG, "insertFavorite() called with: recipe = [$recipe]")
-        mPresenter?.insertFavoriteRecipe(recipe)
-    }
-
-    override fun showProgressBar(visibility: Boolean) {
-        root.home_progress_bar.visibility = if (visibility) View.VISIBLE else View.GONE
+        recipeViewModel.insertFavoriteRecipe(recipe)
     }
 
     override fun networkAvailable() {
         Log.d(TAG, "networkAvailable() called")
-        mPresenter?.getRecipes()
+        recipeViewModel.getRecipes()
     }
 
     override fun networkUnavailable() {
@@ -128,12 +120,11 @@ open class HomeFragment : Fragment(), HomeContract.View, NetworkStateReceiver.On
         if (mRecipes.isEmpty()) {
             showEmptyView(true)
         }
-        showProgressBar(false)
-        root.empty_text_view.setText(R.string.check_internet_and_try_again_please)
+        mEmptyTextView?.setText(R.string.check_internet_and_try_again_please)
     }
 
     override fun showEmptyView(visibility: Boolean) {
-        root.home_empty_view.visibility = if (visibility) View.VISIBLE else View.GONE
+        fragmentHomeBinding.homeEmptyView.visibility = if (visibility) View.VISIBLE else View.GONE
     }
 
     override fun onDestroy() {
@@ -144,25 +135,19 @@ open class HomeFragment : Fragment(), HomeContract.View, NetworkStateReceiver.On
 
     private fun unregisterNetworkChanges() {
         Log.d(TAG, "unregisterNetworkChanges() called")
-        try {
-            context?.unregisterReceiver(mNetworkReceiver)
-        } catch (e: IllegalArgumentException) {
-            e.printStackTrace()
-        }
-    }
+        context?.unregisterReceiver(mNetworkReceiver)
 
+    }
 
     companion object {
 
         val FRAGMENT_NAME = HomeFragment::class.java.simpleName
 
 
-        fun newInstance() = HomeFragment().apply {
+        fun newInstance() =  HomeFragment().apply {
             arguments = Bundle().apply {
 
             }
         }
-
     }
-
 }

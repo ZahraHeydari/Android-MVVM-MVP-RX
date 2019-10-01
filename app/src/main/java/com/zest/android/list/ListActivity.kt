@@ -2,26 +2,26 @@ package com.zest.android.list
 
 import android.content.Context
 import android.content.Intent
+import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.view.MenuItem
 import com.zest.android.LifecycleLoggingActivity
 import com.zest.android.R
 import com.zest.android.data.Recipe
+import com.zest.android.databinding.ActivityListBinding
 import com.zest.android.detail.DetailActivity
 import com.zest.android.favorite.FavoriteFragment
-import com.zest.android.favorite.OnFavoriteFragmentInteractionListener
 import com.zest.android.util.ActivityUtils
-import kotlinx.android.synthetic.main.activity_list.*
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 
-
 /**
- * @Author ZARA
+ * @Author ZARA.
  */
-class ListActivity : LifecycleLoggingActivity(), OnFavoriteFragmentInteractionListener {
+class ListActivity : LifecycleLoggingActivity(), OnListCallback {
 
     private val TAG = ListActivity::class.java.name
+    lateinit var activityListBinding: ActivityListBinding
 
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase))
@@ -29,31 +29,24 @@ class ListActivity : LifecycleLoggingActivity(), OnFavoriteFragmentInteractionLi
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_list)
-        setSupportActionBar(list_toolbar)
+        activityListBinding = DataBindingUtil.setContentView(this, R.layout.activity_list)
+        setSupportActionBar(activityListBinding.listToolbar)
         supportActionBar?.setDisplayShowTitleEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
-        list_toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.colorAccent))
 
+        activityListBinding.listToolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.colorAccent))
 
-        intent?.let { nonNullIntent ->
-            nonNullIntent.action?.let { nonNullAction ->
-                when (nonNullAction) {
-                    ACTION_FAVORITE -> ActivityUtils.addFragmentToActivity(
-                            supportFragmentManager,
-                            FavoriteFragment.newInstance(),
-                            R.id.list_container)
-                }
-
+        intent?.action?.let {
+            when (it) {
+                ACTION_FAVORITE -> ActivityUtils.addFragmentToActivity(
+                        supportFragmentManager,
+                        FavoriteFragment.newInstance(),
+                        R.id.list_container)
             }
-
         }
     }
 
-    override fun gotoDetailPage(recipe: Recipe) {
-        DetailActivity.start(this, recipe)
-    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
@@ -66,8 +59,12 @@ class ListActivity : LifecycleLoggingActivity(), OnFavoriteFragmentInteractionLi
     }
 
 
-    override fun updateToolbarTitle(resId: Int) {
+    override fun updateActionBarTitle(resId: Int) {
         supportActionBar?.setTitle(resId)
+    }
+
+    override fun gotoDetailPage(recipe: Recipe) {
+        DetailActivity.start(this, recipe)
     }
 
     companion object {
@@ -75,7 +72,7 @@ class ListActivity : LifecycleLoggingActivity(), OnFavoriteFragmentInteractionLi
         private val ACTION_FAVORITE = "com.zest.android.ACTION_FAVORITE"
 
         /**
-         * To start activity for displaying favorites
+         * To start activity with favorite mode
          *
          * @param context
          * @return
@@ -87,7 +84,6 @@ class ListActivity : LifecycleLoggingActivity(), OnFavoriteFragmentInteractionLi
             }
             context.startActivity(starter)
         }
-
     }
 
 }

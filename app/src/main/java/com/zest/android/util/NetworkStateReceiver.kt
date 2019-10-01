@@ -5,18 +5,14 @@ import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
 import android.util.Log
-import java.util.HashSet
+import java.util.*
 
 class NetworkStateReceiver : BroadcastReceiver() {
 
-    private val TAG = NetworkStateReceiver::class.java.name
-    private var listeners: MutableSet<OnNetworkStateReceiverListener>
+    private val TAG = NetworkStateReceiver::class.java.simpleName
+    private var listeners: MutableSet<OnNetworkStateReceiverListener> = HashSet()
     private var connected: Boolean? = null
 
-    init {
-        listeners = HashSet()
-        connected = null
-    }
 
     override fun onReceive(context: Context, intent: Intent) {
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -52,4 +48,5 @@ class NetworkStateReceiver : BroadcastReceiver() {
 
         fun networkUnavailable()
     }
+
 }

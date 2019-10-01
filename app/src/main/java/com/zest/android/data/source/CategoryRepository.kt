@@ -1,7 +1,8 @@
 package com.zest.android.data.source
 
 import android.util.Log
-import com.zest.android.category.CategoryPresenter
+import com.zest.android.category.CategoryViewModel
+import com.zest.android.data.Category
 import com.zest.android.data.CategoryResponse
 import com.zest.android.data.source.local.DatabaseManager
 import com.zest.android.data.source.remote.APIServices
@@ -20,9 +21,8 @@ import retrofit2.Response
  */
 class CategoryRepository {
 
-
     private val TAG = CategoryRepository::class.java.name
-    private var mApiServices: APIServices? = null
+    private val mApiServices: APIServices
     private val mDatabaseManager: DatabaseManager by lazy { DatabaseManager.getInstance() }
 
     init {
@@ -35,22 +35,22 @@ class CategoryRepository {
      * @param categoriesCallback
      * @return
      */
-    fun loadRootCategories(categoriesCallback: CategoryPresenter.OnCategoriesCallback) {
-        mApiServices?.getCategories()?.enqueue(OnCategoryResponseCallback(categoriesCallback))
+    fun loadRootCategories(categoriesCallback: CategoryViewModel.OnCategoriesCallback) {
+        mApiServices.categories.enqueue(OnCategoryResponseCallback(categoriesCallback))
     }
 
 
-    private inner class OnCategoryResponseCallback(private val categoriesCallback:
-                                                   CategoryPresenter.OnCategoriesCallback) : Callback<CategoryResponse> {
+    private inner class OnCategoryResponseCallback(private val categoriesCallback: CategoryViewModel.OnCategoriesCallback)
+        : Callback<CategoryResponse> {
 
         override fun onResponse(call: Call<CategoryResponse>, response: Response<CategoryResponse>) {
             Log.d(TAG, "onResponse() called with: call = [" + call + "], response = [" + response.raw() + "]")
             if (response.isSuccessful) {
                 Log.i(TAG, "onResponseBody: " + response.body())
                 val categoryResponse = response.body()
-                categoryResponse?.categories?.let { nonNullCategoriesData ->
-                    if (nonNullCategoriesData.isNotEmpty()) {
-                        categoriesCallback.loadData(nonNullCategoriesData)
+                categoryResponse?.let {
+                    if (it.categories.isNotEmpty()) {
+                        categoriesCallback.loadData(categoryResponse.categories)
                     }
                 }
 
@@ -63,6 +63,4 @@ class CategoryRepository {
             t.printStackTrace()
         }
     }
-
-
 }

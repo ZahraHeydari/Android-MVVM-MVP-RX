@@ -9,7 +9,6 @@ import io.fabric.sdk.android.Fabric
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig
 import kotlin.properties.Delegates
 
-
 /**
  * @Author ZARA.
  */
@@ -17,7 +16,7 @@ class MainApplication : Application() {
 
     companion object {
 
-        private val TAG = MainApplication::class.java.name
+        private val TAG = MainApplication::class.java.simpleName
         var instance: MainApplication by Delegates.notNull()
     }
 
@@ -33,12 +32,10 @@ class MainApplication : Application() {
                 .build())
     }
 
-
     override fun attachBaseContext(base: Context) {
         super.attachBaseContext(base)
         MultiDex.install(this)
     }
-
 
     /**
      * this method called when phone [Configuration] changed like

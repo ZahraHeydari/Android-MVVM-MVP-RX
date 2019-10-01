@@ -2,7 +2,7 @@ package com.zest.android.util
 
 import android.content.Context
 import android.graphics.Typeface
-import java.util.HashMap
+import java.util.*
 
 /**
  * to Create cache for fonts from assets and use in the customized views
@@ -10,7 +10,7 @@ import java.util.HashMap
  * Typeface.createFromAsset(context.getAssets(),FONTS_PATH + "IRAN_Sans.ttf");
  * because it may raise [OutOfMemoryError].
  *
- * Created by ZARA on 09/25/2018.
+ * Created by ZARA on 8/10/2018.
  */
 object FontCache {
 

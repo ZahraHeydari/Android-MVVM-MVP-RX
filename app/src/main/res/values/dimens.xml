@@ -20,6 +20,5 @@
     <dimen name="body1">14sp</dimen><!--Black 87% & leading 20dp-->
 
     <dimen name="caption">12sp</dimen><!--Black 54%-->
-    <dimen name="button">14sp</dimen>
-    <dimen name="text_margin">16dp</dimen><!--Black 87%-->
+    <dimen name="button">14sp</dimen><!--Black 87%-->
 </resources>

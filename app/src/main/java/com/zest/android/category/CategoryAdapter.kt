@@ -1,32 +1,34 @@
 package com.zest.android.category
 
+import android.databinding.DataBindingUtil
+import android.databinding.ViewDataBinding
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
-import com.squareup.picasso.Picasso
 import com.zest.android.R
+import com.zest.android.category.CategoryAdapter.CategoryViewHolder
 import com.zest.android.data.Category
+import com.zest.android.databinding.HolderCategoryBinding
+import com.zest.android.util.DataBindingViewHolder
+import java.util.*
 
 /**
  * [android.support.v7.widget.RecyclerView.Adapter] to adapt
  * [Category] items into [RecyclerView] via [CategoryViewHolder]
  *
- * Created by ZARA on 09/24/2018.
+ * Created by ZARA on 09/30/2018.
  */
-class CategoryAdapter(private val categoryView: CategoryContract.View,
-                      private val categories: MutableList<Category>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class CategoryAdapter(private val listener: OnCategoryFragmentInteractionListener) :
+        RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    private val TAG = CategoryAdapter::class.java.name
+    private val categories: MutableList<Category> = ArrayList()
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return CategoryViewHolder(LayoutInflater.from(parent.context)
-                .inflate(R.layout.holder_category, parent, false))
-    }
-
-    override fun getItemCount(): Int {
-        return categories.size
+        val viewBinding = DataBindingUtil.inflate<HolderCategoryBinding>(LayoutInflater.from(parent.context),
+                R.layout.holder_category, parent, false)
+        return CategoryViewHolder(viewBinding)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -37,35 +39,23 @@ class CategoryAdapter(private val categoryView: CategoryContract.View,
         return categories[position]
     }
 
-    fun updateData(list: List<Category>) {
-        //categories.clear()
-        categories.addAll(list)
+    override fun getItemCount(): Int {
+        return categories.size
+    }
+
+    fun addData(categories: List<Category>) {
+        this.categories.clear()
+        this.categories.addAll(categories)
         this.notifyDataSetChanged()
     }
 
+    /**
+     * The holder of [Category]
+     */
+    private inner class CategoryViewHolder(viewDataBinding: ViewDataBinding) : DataBindingViewHolder<Category>(viewDataBinding) {
 
-    inner class CategoryViewHolder internal constructor(view: View) : RecyclerView.ViewHolder(view) {
-
-        private var mTextView: TextView = view.findViewById(R.id.category_text_view)
-        private var mImageView: ImageView = view.findViewById(R.id.category_image_view)
-
-        fun onBind(category: Category) {
-            mTextView.text = category.title
-            try {
-                Picasso.with(itemView.context)
-                        .load(category.image)
-                        .into(mImageView)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-
-            itemView.setOnClickListener {
-                categoryView.showSubCategories(category)
-            }
-
-
+        override fun onBind(t: Category) {
+            (this.dataBinding as HolderCategoryBinding).categoryViewModel = CategoryViewModel(t, listener)
         }
-
     }
-
 }

@@ -4,9 +4,9 @@ import android.os.Parcel
 import android.os.Parcelable
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import org.greenrobot.greendao.annotation.Id
 
-
-data class Category(var id: Long? = null,
+data class Category(@Id(autoincrement = true) var id: Long? = null,
                     @SerializedName("strCategory") @Expose var title: String,
                     @SerializedName("idCategory") @Expose var categoryId: String? = null,
                     @SerializedName("strCategoryThumb") @Expose var image: String? = null,

@@ -4,19 +4,19 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 
-
 /**
  * This abstract class extends AppCompatActivity class and overrides
  * lifecycle callbacks for logging various lifecycle events.
  *
- * Created by ZARA on 09/25/2018.
+ * Created by ZARA on 8/10/2018.
  */
 abstract class LifecycleLoggingActivity : AppCompatActivity() {
+
 
     /**
      * Debugging tag used by the Android Logger
      */
-    private val TAG = LifecycleLoggingActivity::class.java.simpleName
+    private val TAG = LifecycleLoggingActivity::class.java.name
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -120,4 +120,5 @@ abstract class LifecycleLoggingActivity : AppCompatActivity() {
         super.onDestroy()
         Log.d(TAG, "onDestroy() - the activity is about to be destroyed")
     }
+
 }

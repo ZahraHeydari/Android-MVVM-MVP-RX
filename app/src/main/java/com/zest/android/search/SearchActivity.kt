@@ -1,51 +1,42 @@
 package com.zest.android.search
 
-import android.annotation.SuppressLint
 import android.app.SearchManager
 import android.content.Context
 import android.content.Intent
+import android.databinding.DataBindingUtil
 import android.os.Build
 import android.os.Bundle
 import android.support.v4.view.GravityCompat
 import android.support.v4.view.MenuItemCompat
 import android.support.v7.widget.SearchView
-import android.text.TextUtils
-import android.util.Log
 import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.TextView
 import com.zest.android.LifecycleLoggingActivity
 import com.zest.android.R
 import com.zest.android.data.Recipe
-import com.zest.android.data.source.SearchRepository
+import com.zest.android.data.source.RecipeRepository
+import com.zest.android.databinding.ActivitySearchBinding
 import com.zest.android.detail.DetailActivity
-import io.reactivex.Observable
-import io.reactivex.ObservableOnSubscribe
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.activity_search.*
-import kotlinx.android.synthetic.main.content_search.*
-import kotlinx.android.synthetic.main.empty_view.*
+import com.zest.android.home.RecipeViewModel
+import org.parceler.Parcels
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
-import java.util.*
-import java.util.concurrent.TimeUnit
 
 /**
  * @Author ZARA.
  */
-class SearchActivity : LifecycleLoggingActivity(), SearchContract.View {
+class SearchActivity : LifecycleLoggingActivity(), OnSearchCallback {
 
     private val TAG = SearchActivity::class.java.name
-    private var mPresenter: SearchContract.UserActionsListener? = null
+    private var mQuery: String? = null
     private var mSearchView: SearchView? = null
-    private val mRecipes = ArrayList<Recipe>()
     private var mAdapter: SearchAdapter? = null
     private var mMenuSearchItem: MenuItem? = null
-    private var text: String? = null
-    private lateinit var disposable: Disposable
-
+    private var searchQuery: String? = null
+    lateinit var activitySearchBinding: ActivitySearchBinding
+    lateinit var recipeViewModel: RecipeViewModel
 
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase))
@@ -53,22 +44,27 @@ class SearchActivity : LifecycleLoggingActivity(), SearchContract.View {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_search)
-        setSupportActionBar(search_toolbar)
+        activitySearchBinding = DataBindingUtil.setContentView(this, R.layout.activity_search)
+        recipeViewModel = RecipeViewModel(RecipeRepository(), this)
+        activitySearchBinding.recipeViewModel = recipeViewModel
+        activitySearchBinding.executePendingBindings()
+
+        setSupportActionBar(activitySearchBinding.searchToolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
-        empty_text_view.setText(R.string.no_result)
 
-        SearchPresenter(this, SearchRepository())
-        mAdapter = SearchAdapter(this, mRecipes)
-        search_recycler_view.adapter = mAdapter
+        (activitySearchBinding.searchEmptyView.findViewById<View>(R.id.empty_text_view) as TextView).text = getString(R.string.no_result)
 
-        if (Action_SEARCH_TAG == intent?.action && intent?.extras?.containsKey(String::class.java.name) == true) {
-            text = intent?.extras?.getString(String::class.java.name)
-            showProgressBar(true)
-            text?.let { nonNullText ->
-                mPresenter?.searchQuery(nonNullText)
+        mAdapter = SearchAdapter(this)
+        activitySearchBinding.searchRecyclerView.adapter = mAdapter
+
+        if (Action_SEARCH_TAG == intent?.action) {
+            if (intent?.extras?.containsKey(String::class.java.name) == true) {
+                searchQuery = intent?.extras?.getString(String::class.java.name)
+                searchQuery?.let { nonNullSearchQuery ->
+                    recipeViewModel.searchQuery(nonNullSearchQuery)
+                }
             }
         }
     }
@@ -83,7 +79,6 @@ class SearchActivity : LifecycleLoggingActivity(), SearchContract.View {
         return super.onOptionsItemSelected(item)
     }
 
-    @SuppressLint("CheckResult")
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_search, menu)
@@ -96,55 +91,20 @@ class SearchActivity : LifecycleLoggingActivity(), SearchContract.View {
         mSearchView?.setHorizontalGravity(Gravity.END)
         mSearchView?.queryHint = getString(R.string.action_search)
         val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
-        mSearchView?.setSearchableInfo(searchManager.getSearchableInfo(componentName))
+        if (mSearchView != null) {
+            mSearchView?.setSearchableInfo(searchManager.getSearchableInfo(componentName))
+        }
+
+        mSearchView?.setOnQueryTextListener(OnSearchQueryTextListener())
         mSearchView?.setOnCloseListener(OnSearchCloseListener())
 
         if (Action_SEARCH_TAG == intent?.action) {
-            //when received with text
-            mSearchView?.setQuery(text, false)
+            //when received with searchQuery
+            mSearchView?.setQuery(searchQuery, false)
         }
         mSearchView?.isIconified = false
-
-
-        // Set up the query listener that executes the search
-        disposable = Observable.create(ObservableOnSubscribe<String> { subscriber ->
-            mSearchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                override fun onQueryTextChange(newText: String?): Boolean {
-                    if (!TextUtils.isEmpty(newText)) {
-                        subscriber.onNext(newText!!)
-                    } else {
-                        mAdapter?.removePreviousData()
-                    }
-                    return false
-                }
-
-                override fun onQueryTextSubmit(query: String?): Boolean {
-                    //MenuItemCompat.expandActionView(mMenuSearchItem)
-                    if (!TextUtils.isEmpty(query)) {
-                        subscriber.onNext(query!!)
-                    }
-                    return false
-                }
-            })
-        })
-                .map { text -> text.toLowerCase().trim() }
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .doAfterNext {
-                    showProgressBar(true)
-                    showEmptyView(false)
-                }
-                .debounce(250, TimeUnit.MILLISECONDS)
-                //.distinct()
-                .filter { text -> text.isNotBlank() }
-                .subscribe { text ->
-                    Log.d(TAG, "subscriber: $text")
-                    mPresenter?.searchQuery(text)
-                }
-
         return true
     }
-
 
     override fun onBackPressed() {
         if (mSearchView != null) {
@@ -154,43 +114,20 @@ class SearchActivity : LifecycleLoggingActivity(), SearchContract.View {
         }
     }
 
-    override fun onStop() {
-        super.onStop()
-        if (!disposable.isDisposed) {
-            disposable.dispose()
-        }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        mPresenter?.start()
-    }
-
-    override fun setPresenter(presenter: SearchContract.UserActionsListener) {
-        mPresenter = presenter
-    }
-
     override fun gotoDetailPage(recipe: Recipe) {
         DetailActivity.start(this, recipe)
     }
 
-    override fun setResult(recipes: List<Recipe>) {
-        mRecipes.clear()
-        mRecipes.addAll(recipes)
-        mAdapter?.notifyDataSetChanged()
+    override fun showEmptyView(visibility: Boolean) {
+        activitySearchBinding.searchEmptyView.visibility = if (visibility) View.VISIBLE else View.GONE
     }
 
-
-    override fun clearData() {
+    override fun noResult() {
         mAdapter?.removePreviousData()
     }
 
-    override fun showEmptyView(visibility: Boolean) {
-        search_empty_view.visibility = if (visibility) View.VISIBLE else View.GONE
-    }
-
-    override fun showProgressBar(visibility: Boolean) {
-        search_progress_bar.visibility = if (visibility) View.VISIBLE else View.GONE
+    override fun setResult(recipes: List<Recipe>) {
+        mAdapter?.addData(recipes)
     }
 
     private inner class OnSearchCloseListener : SearchView.OnCloseListener {
@@ -200,13 +137,25 @@ class SearchActivity : LifecycleLoggingActivity(), SearchContract.View {
         }
     }
 
+    private inner class OnSearchQueryTextListener : SearchView.OnQueryTextListener {
+        override fun onQueryTextSubmit(query: String): Boolean {
+            mQuery = query
+            recipeViewModel.searchQuery(mQuery?:"")
+            MenuItemCompat.expandActionView(mMenuSearchItem)
+            return false
+        }
+
+        override fun onQueryTextChange(s: String): Boolean {
+            return false
+        }
+    }
 
     companion object {
 
         private val Action_SEARCH_TAG = "com.zest.android.ACTION_SEARCH_TAG"
 
         /**
-         * Get a new Intent to Start Activity
+         * get new Intent to Start Activity
          *
          * @param context
          * @return
@@ -223,10 +172,11 @@ class SearchActivity : LifecycleLoggingActivity(), SearchContract.View {
          * @return
          */
         fun startWithText(context: Context, text: String) {
-            val starter = Intent(context, SearchActivity::class.java).apply {
-                this.putExtra(String::class.java.name, text)
-                this.action = Action_SEARCH_TAG
-            }
+            val starter = Intent(context, SearchActivity::class.java)
+            val bundle = Bundle()
+            starter.putExtra(String::class.java.name, text)
+            starter.putExtras(bundle)
+            starter.action = Action_SEARCH_TAG
             context.startActivity(starter)
         }
     }

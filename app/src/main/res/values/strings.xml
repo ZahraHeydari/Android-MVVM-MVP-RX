@@ -35,4 +35,5 @@
     <string name="removed_from_shopping_list">Removed selected items from shopping list.</string>
     <string name="there_is_no_sub_category">there is no sub category!</string>
     <string name="check_internet_and_try_again_please">Check internet and try again, please.</string>
+    <string name="there_is_no_recipe">There is no recipe!</string>
 </resources>

@@ -1,31 +1,33 @@
 package com.zest.android.favorite
 
-import android.content.DialogInterface
-import android.support.v7.app.AlertDialog
+import android.databinding.DataBindingUtil
+import android.databinding.ViewDataBinding
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import com.squareup.picasso.Picasso
 import com.zest.android.R
 import com.zest.android.data.Recipe
+import com.zest.android.databinding.HolderFavoriteBinding
 import com.zest.android.favorite.FavoriteAdapter.FavoriteViewHolder
-import kotlinx.android.extensions.LayoutContainer
-import kotlinx.android.synthetic.main.holder_favorite.*
+import com.zest.android.home.RecipeViewModel
+import com.zest.android.util.DataBindingViewHolder
 
 /**
  * [android.support.v7.widget.RecyclerView.Adapter] to adapt
  * Favorite[Recipe] items into [RecyclerView] via [FavoriteViewHolder]
  *
- *
- * Created by ZARA on 09/25/2018.
+ * Created by ZARA on 8/10/2018.
  */
-internal class FavoriteAdapter(private val favoriteView: FavoriteContract.View,
-                               private val recipes: MutableList<Recipe>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+internal class FavoriteAdapter(private val listener: OnFavoriteFragmentInteractionListener)
+    : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    private var recipes: MutableList<Recipe> = ArrayList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return FavoriteViewHolder(LayoutInflater.from(parent.context)
-                .inflate(R.layout.holder_favorite, parent, false))
+        val holderFavoriteBinding =
+                DataBindingUtil.inflate<HolderFavoriteBinding>(LayoutInflater.from(parent.context),
+                        R.layout.holder_favorite, parent, false)
+        return FavoriteViewHolder(holderFavoriteBinding)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -40,76 +42,21 @@ internal class FavoriteAdapter(private val favoriteView: FavoriteContract.View,
         return recipes.size
     }
 
-    fun updateData(list: List<Recipe>?) {
-        recipes.clear()
-        list?.let { nonNullRecipeList ->
-            if (nonNullRecipeList.isNotEmpty()) {
-                recipes.addAll(nonNullRecipeList)
-            }
+    fun addData(recipes: List<Recipe>?) {
+        this.recipes.clear()
+        if (recipes != null && !recipes.isEmpty()) {
+            this.recipes.addAll(recipes)
         }
-        this.notifyDataSetChanged()
+        notifyDataSetChanged()
     }
 
     /**
      * The holder of favorite
      */
-    inner class FavoriteViewHolder(override val containerView: View) : RecyclerView.ViewHolder(containerView), LayoutContainer {
+    inner class FavoriteViewHolder(dataBinding: ViewDataBinding) : DataBindingViewHolder<Recipe>(dataBinding) {
 
-
-        fun onBind(recipe: Recipe) {
-            favorite_title_text_view.text = recipe.title
-            try {
-                Picasso.with(itemView.context)
-                        .load(recipe.image)
-                        .into(favorite_image_view)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-
-            containerView.setOnClickListener {
-                favoriteView.gotoDetailPage(recipe)
-            }
-            favorite_icon_image_view.setOnClickListener(OnFavoriteClickListener(recipe))
-        }
-
-
-        /**
-         * To cancel delete favorite recipe
-         */
-        private inner class OnNegativeClickListener : DialogInterface.OnClickListener {
-            override fun onClick(dialog: DialogInterface, id: Int) {
-                dialog.dismiss()// User cancelled the dialog
-            }
-        }
-
-        /**
-         * To delete favorite recipe
-         */
-        private inner class OnPositiveButtonClickListener
-        internal constructor(private val recipe: Recipe) : DialogInterface.OnClickListener {
-
-            override fun onClick(dialog: DialogInterface, id: Int) {
-                dialog.dismiss()//Cancel the dialog
-                favoriteView.deleteFavorite(recipe)
-            }
-        }
-
-
-        private inner class OnFavoriteClickListener(private val recipe: Recipe) : View.OnClickListener {
-
-            override fun onClick(view: View) {
-                val builder = AlertDialog.Builder(itemView.context)
-                builder.setTitle(itemView.context.getString(R.string.delete))
-                        .setMessage(itemView.context.getString(
-                                R.string.are_you_sure_want_to_delete_this_item_from_favorite_list))
-                        .setCancelable(false)
-                        .setPositiveButton(itemView.context.getString(R.string.yes),
-                                OnPositiveButtonClickListener(recipe))
-                        .setNegativeButton(itemView.context.getString(R.string.no),
-                                OnNegativeClickListener())
-                builder.create()
-                builder.show()
-            }
+        override fun onBind(t: Recipe) {
+            (this.dataBinding as HolderFavoriteBinding).recipeViewModel = RecipeViewModel(t, listener)
         }
     }
 }
