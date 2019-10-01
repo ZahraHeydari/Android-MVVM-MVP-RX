@@ -16,13 +16,13 @@ import java.util.*
 
 class RecipeViewModel : BaseObservable {
 
-
+    private val TAG = RecipeViewModel::class.java.name
     private var searchCallback: OnSearchCallback? = null
     private var homeListener: OnHomeFragmentInteractionListener? = null
     private var favoriteListener: OnFavoriteFragmentInteractionListener? = null
     private lateinit var recipeRepository: RecipeRepository
     private lateinit var detailCallback: OnDetailCallback
-    private val model = ObservableField<Recipe>()
+    private val recipeData = ObservableField<Recipe>()
     private val hasTag = ObservableBoolean(false)
     private val hasRecipe = ObservableBoolean(false)
     private val isLoading = ObservableBoolean(false)
@@ -30,17 +30,18 @@ class RecipeViewModel : BaseObservable {
     private val isDetailFavorite = ObservableBoolean(false)
 
 
-
     constructor(recipe: Recipe?, recipeRepository: RecipeRepository, callback: OnDetailCallback) {
         this.recipeRepository = recipeRepository
         this.detailCallback = callback
-        this.model.set(recipe)
-        this.model.notifyChange()
+        this.recipeData.set(recipe)
+        this.recipeData.notifyChange()
         updateIsDetailFavorite()
     }
 
     private fun updateIsDetailFavorite() {
-        setIsDetailFavorite(recipeRepository.getFavoriteByRecipeId(this.model.get()!!) != null)
+        recipeData.get()?.let { nonNullRecipe ->
+            setIsDetailFavorite(recipeRepository.getFavoriteByRecipeId(nonNullRecipe) != null)
+        }
     }
 
     constructor(favoriteRepository: RecipeRepository, listener: OnFavoriteFragmentInteractionListener) {
@@ -50,13 +51,13 @@ class RecipeViewModel : BaseObservable {
 
     constructor(recipe: Recipe, listener: OnFavoriteFragmentInteractionListener) {
         this.favoriteListener = listener
-        this.model.set(recipe)
+        this.recipeData.set(recipe)
     }
 
     constructor(recipe: Recipe, recipeRepository: RecipeRepository, listener: OnHomeFragmentInteractionListener) {
         this.recipeRepository = recipeRepository
         homeListener = listener
-        this.model.set(recipe)
+        this.recipeData.set(recipe)
     }
 
     constructor(recipeRepository: RecipeRepository, listener: OnHomeFragmentInteractionListener) {
@@ -70,7 +71,7 @@ class RecipeViewModel : BaseObservable {
     }
 
     constructor(recipe: Recipe, searchCallback: OnSearchCallback) {
-        this.model.set(recipe)
+        this.recipeData.set(recipe)
         this.searchCallback = searchCallback
     }
 
@@ -80,18 +81,18 @@ class RecipeViewModel : BaseObservable {
     }
 
     @Bindable
-    fun getTitle():String{
-        return this.model.get()!!.title!!
+    fun getTitle(): String {
+        return this.recipeData.get()?.title ?: ""
     }
 
     @Bindable
-    fun getInstructions():String{
-        return this.model.get()!!.instructions!!
+    fun getInstructions(): String {
+        return this.recipeData.get()?.instructions ?: ""
     }
 
     @Bindable
-    fun getImage():String{
-        return this.model.get()!!.image!!
+    fun getImage(): String {
+        return this.recipeData.get()?.image ?: ""
     }
 
     @Bindable
@@ -99,7 +100,7 @@ class RecipeViewModel : BaseObservable {
         return this.hasTag.get()
     }
 
-    fun setHasTag(isLoaded: Boolean) {
+    private fun setHasTag(isLoaded: Boolean) {
         this.hasTag.set(isLoaded)
         notifyChange()
     }
@@ -117,15 +118,7 @@ class RecipeViewModel : BaseObservable {
             return null
         }
         setHasTag(true)
-        return tags!!.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-    }
-
-    fun loadTagTitles(recipe: Recipe): List<String>? {
-        Log.d(TAG, "loadTagTitles() called with: recipe = [$recipe]")
-        val tags = recipe.tag
-        if (TextUtils.isEmpty(tags)) return null
-        val split = tags!!.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-        return Arrays.asList(*split)
+        return tags?.split(",".toRegex())?.dropLastWhile { it.isEmpty() }?.toTypedArray()
     }
 
     fun updateRecipe(recipe: Recipe) {
@@ -149,7 +142,7 @@ class RecipeViewModel : BaseObservable {
     }
 
     fun onRecipeItemClick() {
-        homeListener!!.gotoDetailPage(this.model.get()!!)
+        homeListener!!.gotoDetailPage(this.recipeData.get()!!)
     }
 
     fun getRecipes() {
@@ -174,12 +167,9 @@ class RecipeViewModel : BaseObservable {
     }
 
     fun loadFavorites(): MutableList<Recipe>? {
-        val recipes : MutableList<Recipe> = recipeRepository.loadAllFavorites()
+        val recipes: MutableList<Recipe> = recipeRepository.loadAllFavorites()
         //val recipes = recipeRepository.loadAllFavorites()
-        if (recipes != null && !recipes.isEmpty())
-            setHasRecipe(true)
-        else
-            setHasRecipe(false)
+        if (recipes.isNotEmpty()) setHasRecipe(true) else setHasRecipe(false)
         return recipes
     }
 
@@ -188,25 +178,29 @@ class RecipeViewModel : BaseObservable {
     }
 
     fun onDetailFavoriteClick() {
-        if (model == null) return
-        if (isDetailFavorite.get()) {
-            detailCallback.showMessage(R.string.deleted_this_recipe_from_your_favorite_list)
-            recipeRepository.removeFavorite(model.get()!!)
-            setIsDetailFavorite(false)
-        } else {
-            detailCallback.showMessage(R.string.added_this_recipe_to_your_favorite_list)
-            recipeRepository.insertFavorite(model.get()!!)
-            setIsDetailFavorite(true)
+        recipeData.get()?.let { nonNullRecipe ->
+            if (isDetailFavorite.get()) {
+                detailCallback.showMessage(R.string.deleted_this_recipe_from_your_favorite_list)
+                recipeRepository.removeFavorite(nonNullRecipe)
+                setIsDetailFavorite(false)
+            } else {
+                detailCallback.showMessage(R.string.added_this_recipe_to_your_favorite_list)
+                recipeRepository.insertFavorite(nonNullRecipe)
+                setIsDetailFavorite(true)
+            }
         }
+
     }
 
     @Bindable
     fun getIsFavorite(): Boolean {
-        setIsFavorite(recipeRepository.getFavoriteByRecipeId(this.model.get()!!) != null)
+        recipeData.get()?.let {
+            setIsFavorite(recipeRepository.getFavoriteByRecipeId(it) != null)
+        }
         return isFavorite.get()
     }
 
-    fun setIsFavorite(status: Boolean) {
+    private fun setIsFavorite(status: Boolean) {
         isFavorite.set(status)
         notifyChange()
     }
@@ -216,37 +210,44 @@ class RecipeViewModel : BaseObservable {
         return isDetailFavorite.get()
     }
 
-    fun setIsDetailFavorite(status: Boolean) {
+    private fun setIsDetailFavorite(status: Boolean) {
         isDetailFavorite.set(status)
         notifyChange()
     }
 
     fun onRecipeFavoriteClick() {
-        if (model == null) return
-        if (recipeRepository.getFavoriteByRecipeId(this.model.get()!!) != null) {
-            recipeRepository.deleteFavorite(model.get()!!)
-            setIsFavorite(false)
-        } else {
-            recipeRepository.insertFavorite(model.get()!!)
-            setIsFavorite(true)
+        recipeData.get()?.let { nonNullRecipe ->
+            if (recipeRepository.getFavoriteByRecipeId(nonNullRecipe) != null) {
+                recipeRepository.deleteFavorite(nonNullRecipe)
+                setIsFavorite(false)
+            } else {
+                recipeRepository.insertFavorite(nonNullRecipe)
+                setIsFavorite(true)
+            }
         }
     }
 
     fun onDeleteFavoriteClick() {
-        favoriteListener!!.showDeleteFavoriteDialog(this.model.get()!!)
+        recipeData.get()?.let { nonNullRecipe ->
+            favoriteListener?.showDeleteFavoriteDialog(nonNullRecipe)
+        }
     }
 
     fun onFavoriteItemClick() {
-        favoriteListener!!.gotoDetailPage(this.model.get()!!)
+        recipeData.get()?.let { nonNullRecipe ->
+            favoriteListener?.gotoDetailPage(nonNullRecipe)
+        }
     }
 
     fun onSearchItemClick() {
-        searchCallback!!.gotoDetailPage(this.model.get()!!)
+        recipeData.get()?.let { nonNullRecipe ->
+            searchCallback?.gotoDetailPage(nonNullRecipe)
+        }
     }
 
     fun searchQuery(searchQuery: String) {
         setLoading(true)
-        searchCallback!!.showEmptyView(false)
+        searchCallback?.showEmptyView(false)
         recipeRepository.getAllRecipesByQuery(searchQuery, SearchCallbackImp())
     }
 
@@ -265,14 +266,14 @@ class RecipeViewModel : BaseObservable {
 
         override fun loadData(recipes: List<Recipe>) {
             setLoading(false)
-            searchCallback!!.showEmptyView(recipes.isEmpty())
-            searchCallback!!.setResult(recipes)
+            searchCallback?.showEmptyView(recipes.isEmpty())
+            searchCallback?.setResult(recipes)
         }
 
         override fun noData() {
             setLoading(false)
-            searchCallback!!.showEmptyView(true)
-            searchCallback!!.noResult()
+            searchCallback?.showEmptyView(true)
+            searchCallback?.noResult()
         }
     }
 
@@ -281,17 +282,12 @@ class RecipeViewModel : BaseObservable {
         override fun loadData(recipes: List<Recipe>) {
             setLoading(false)
             setHasRecipe(true)
-            homeListener!!.loadRecipes(recipes)
+            homeListener?.loadRecipes(recipes)
         }
 
         override fun noData() {
             setLoading(false)
             setHasRecipe(false)
         }
-    }
-
-    companion object {
-
-        private val TAG = RecipeViewModel::class.java.simpleName
     }
 }

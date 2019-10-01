@@ -25,7 +25,7 @@ class CategoryFragment : Fragment(), OnCategoryFragmentInteractionListener {
     private var mAdapter: CategoryAdapter? = null
     private var mCallback: OnHomeCallback? = null
     private lateinit var fragmentCategoryBinding: FragmentCategoryBinding
-    private var categoryViewModel: CategoryViewModel? = null
+    lateinit var categoryViewModel: CategoryViewModel
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -49,7 +49,7 @@ class CategoryFragment : Fragment(), OnCategoryFragmentInteractionListener {
         fragmentCategoryBinding.categoryViewModel = categoryViewModel
         fragmentCategoryBinding.executePendingBindings()
         fragmentCategoryBinding.categoryRecyclerView.adapter = mAdapter
-        categoryViewModel?.loadCategories()
+        categoryViewModel.loadCategories()
         return fragmentCategoryBinding.root
     }
 
